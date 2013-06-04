@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<meta charset="utf-8">
+        <title>UniBO MotorSport - Telemetry System</title>
+		<link rel="shortcut icon" href="./images/favicon-logo.ico"/>
+    </head>
+    <body>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    
+    <div id="leftbar">
+			<div id="side1" class="flip">
+				<div id="giri">
+				</div>
+				<div id="accContainer">
+					<div id="accelerometro">
+					</div>
+				</div>
+				<div id="giroscopio">
+				</div>
+				<br><br>
+				<center><button id="BS1">Car Control Panel</button></center>
+			</div>
+			<div id="side2" class = "flip">
+				<ul id="menu">
+					<li>
+						<a href="#">Mappe</a>
+						<ul>
+							<li>
+								<a href="#">Skid Pad</a>
+							</li>
+							<li>
+								<a href="#">Acceleration</a>
+							</li>
+							<li>
+								<a href="#">Fuel Eco WET</a>
+							</li>
+							<li>
+								<a href="#">Fuel Eco DRY</a>
+							</li>
+							<li>
+								<a href="#">Power WET</a>
+							</li>
+							<li>
+								<a href="#">Power DRY</a>
+							</li>
+						</ul>
+					<li>
+					<li>
+						<a href="#">Cambiata</a>
+						<ul>
+							<li>
+								<a href="#">Default</a>
+							</li>
+							<li>
+								<a href="#">Racing</a>
+							</li>
+							<li>
+								<a href="#">Test</a>
+							</li>
+						</ul>
+					<li>
+				</ul>
+				<div id="mapsValsDiv">
+					<table id="mapsValTab" width=200px>
+						<span><caption id="currentMap"></caption></span>
+						<tr>
+							<td id="par0">ciao</td>
+							<td id="valpar0"></td>
+						</tr>
+						<tr>
+							<td id="par1">ciao</td>
+							<td id="valpar0"></td>
+						</tr>
+						<tr>
+							<td id="par2">ciao</td>
+							<td id="valpar0"></td>
+						</tr>
+					</table>
+				</div>
+				<br><br>	
+				<center><button id="BS2">Stats Graphs Panel</button></center>
+				<button onclick="toFSmode()">Enter Fullscreen mode (Document)</button>
+			</div>
+		</div>
+		
+		<div id="rightbar">
+		</div>
+		
+		<div id="header">
+			<div style="float: left;">
+				<table>
+				<tr>
+					<td><span>Thr</span></td>
+					<td><meter min="0" max="100" class="barre1" id="pFarfalla" value="50"></meter></td>
+					<td><span id="vFarfalla"></span>%</td>
+				</tr>
+				<tr>
+					<td><span>P Brake F</span></td>
+					<td><meter min="0" max="100" class="barre1" id="pFrenoAnt" value="50"></meter></td>
+					<td><span id="vFrenoAnt"></span>%</td>
+				</tr>
+				<tr>
+					<td><span>P Brake R</span></td>
+					<td><meter min="0" max="100" class="barre1" id="pFrenoPost" value="50"></meter></td>
+					<td><span id="vFrenoPost"></span>%</td>
+				</tr>
+				<tr>
+					<td>Brake Bal</td>
+					<td><meter min="0" max="100" class="barre1" id="pRipart" value="50"></meter></td>
+					<td><span id="vRipart"></span>%</td>
+				</tr>
+				<tr>
+					<td>Clutch Pos</td>
+					<td><meter min="0" max="100" class="barre1" id="pFrizione" value="50"></meter></td>
+					<td><span id="vFrizione"></span>%</td>
+				</tr>
+				</table>
+			</div>
+			<div  style="float: right; width: 75px;">
+
+					<canvas id="display" width="70" height="90" >
+					</canvas>
+					km/h <span id="speed"></span>
+			</div>
+			<div style="float: right;">
+				<table style="margin-left: 30px;">
+					<tr>
+						<td>Map</td><td><span id="mappa"></span></td>
+					</tr>
+					<tr>
+						<td>TCS Level</td><td><span id="tracLevel"></span></td>
+					</tr>
+					<tr>
+						<td>LCS</td><td><span id="rot3"></span></td>
+					</tr>
+					<tr>
+						<td>TCS count</td><td><span id="tracCou"></span></td>
+					</tr>
+					<tr>
+						<td>&Delta; Ant</td><td><span id="deltaAnt"></span></td>
+					</tr>
+				</table>
+				
+			</div>
+		</div>
+		
+		<div id="grafici">
+		</div>
+		
+		<!--CARICAMENTO LIBRERIE-->
+        <script src="./js/jquery.js"></script>
+		<script src="./js/jquery.flot.js"></script>
+		<script type="text/javascript" src="./speedometer/digitaldisplay.js"></script>
+        <script type="text/javascript" src="./speedometer/speedometer.js"></script>
+        <script type="text/javascript" src="./speedometer/themes/default.js"></script>
+		<script type="text/javascript" src="./speedometer/xcanvas.js"></script>
+        <script type="text/javascript" src="./speedometer/tbe.js"></script>
+		<script type="text/javascript" src="./segment/segment-display.js"></script>
+		<script src="./js/jqueryui.min.js"></script>
+		<script language="javascript" type="text/javascript" src="./js/jquery.flot.navigate.js"></script>
+		<script type="text/javascript" src="./js/jquery.fullscreen-min.js"></script>
+
+		
+        <script>
+        //--> Da mettere in un file .js una volta finito!!! <--
+    	
+    	function toFSmode()
+		{
+			$(document).fullScreen(true);
+		}
+		
+		var data = [];
+		var all_data = [];
+		var t = 0;
+		var min = [],max = [];
+		
+		var numero_sensori = 0; //andrà modificato quando ci arriva il primo messaggio (quello con la lista dei sensori)
+
+		var grafici = [];
+		var hidden = [];
+		var paused = [];
+		var giri;
+		var accelGraph;
+		var accelData = [];
+		var giroscopio;
+		var alertSound;
+		var visibili = [];
+		var attivi = [];
+		var ordineGraf = [];
+		var menuAttivo = null;
+		
+		var display = new SegmentDisplay("display");
+	  	display.pattern         = "#";
+	  	display.displayAngle    = 6;
+	  	display.digitHeight     = 20;
+	  	display.digitWidth      = 11.5;
+	  	display.digitDistance   = 2.5;
+	  	display.segmentWidth    = 2;
+	  	display.segmentDistance = 0.3;
+	  	display.segmentCount    = 7;
+	  	display.cornerType      = 3;
+	  	display.colorOn         = "#d3031b";
+	  	display.colorOff        = "lightgray";
+	  	display.draw();
+	  	
+	  	//EHM A COSA MI SERVE E COME LA USO? VEDI IN FONDO...
+	  	var sensor = null;
+	  	
+	  	function visualizza()
+		{
+			var h;
+			for(h = 0; h < numero_sensori; h++)
+			{
+				if (attivi.indexOf(h) != -1) 
+				{
+					document.getElementById('play' + h).src='./images/pause_butt.png';
+				}
+				else 
+				{
+					document.getElementById('play' + h).src='./images/play_butt.png';
+				}
+				
+				if (visibili.indexOf(h) != -1) 
+				{
+					document.getElementById('sens' + h).style.color="lightgreen";
+					
+					/* DISABILITAZIONE ZOOM CON GRAFICO IN PLAY, DA SISTEMARE
+					if (attivi.indexOf(h) != -1)
+					{
+						var opt=
+						{
+							xaxis:
+							{
+								mode: "time",
+								min: all_data[n][all_data[n].length-1]-10000 //10000 o 100???
+							},
+	        				zoom: 
+							{
+            					interactive: false
+        					},
+        					pan: 
+							{
+            					interactive: false
+        					},
+							series: 
+							{ 
+								shadowSize: 0 
+							},
+							colors: ['red'],
+						};
+					grafici[ind]=$.plot($("#grafico" + n),[all_data[n]], opt);
+					}*/
+					
+					$("#grafico" + h).show('fast');
+					$("#cont" + h).show('fast');
+				}
+				else 
+				{
+					document.getElementById('sens' + h).style.color="darkgray";
+					$("#grafico" + h).hide('fast');
+					$("#cont" + h).hide('fast');
+				}
+			}
+			//SALVO L'ATTUALE ORDINE DEI GRAFICI NEL LOCAL STORAGE, se lo supporto
+			if(typeof(Storage) !== "undefined") {
+				localStorage.setItem('attivi', JSON.stringify(attivi));
+				localStorage.setItem('visibili', JSON.stringify(visibili));
+				localStorage.setItem('ordineGraf', JSON.stringify(ordineGraf));
+			}
+		}
+		
+		$(document).ready(function()
+		{
+			
+			//ABILITO ORDINAMENTO DRAG&DROP DEI GRAFICI
+			$('#rightbar').sortable
+			({
+				stop: function(event, ui)
+				{
+					var grafPos = $(this).sortable('toArray');
+					var indiceArrivo = grafPos.indexOf(ui.item[0].id);
+					var indicePartenza = parseInt(ui.item[0].id.replace('spia',''));
+					
+					if(indiceArrivo > ordineGraf.indexOf(indicePartenza))
+					{
+						for(var counter = ordineGraf.indexOf(indicePartenza); counter < indiceArrivo; counter++)
+						{
+							ordineGraf[counter] = ordineGraf[counter+1];
+						}
+					}
+					else
+					{
+						for(var counter = ordineGraf.indexOf(indicePartenza); counter > indiceArrivo; counter--)
+						{
+							ordineGraf[counter] = ordineGraf[counter-1];
+						}
+					}
+					ordineGraf[indiceArrivo] = indicePartenza;
+					
+					if(indiceArrivo != -1)
+					{
+						if(indiceArrivo == 0)
+						{
+							$('#' + ui.item[0].id.replace('spia','container')).prependTo('#grafici');
+						}
+						else
+						{
+							$('#' + ui.item[0].id.replace('spia','container')).insertAfter('#'+ grafPos[indiceArrivo-1].replace('spia', 'grafico'));
+						}
+						visualizza();
+					}
+				}
+			});
+			$('#rightbar').disableSelection();
+		});
+		
+		$('.playpause').click(function()
+		{
+			var n = parseInt(this.id.replace("play",""));
+			var ind = attivi.indexOf(n) ;
+			document.getElementById('led' + n).src='./images/led_off.png';
+			if (ind != -1){
+				attivi.splice(ind,1);
+						var opt=
+						{
+							xaxis:
+							{
+								mode: "time",
+								min: all_data[n][all_data[n].length-1]-10000 //10000 o 100 (ms)???
+							},
+	        				zoom: 
+							{
+            					interactive: true
+        					},
+        					pan: 
+							{
+            					interactive: true
+        					},
+							series: 
+							{ 
+								shadowSize: 0 
+							},
+							colors: ['red'],
+						};
+				grafici[ind] = $.plot($("#grafico" + n),[all_data[n]], opt);
+			}
+			else
+			{
+				if (attivi.length == 4)
+					attivi.splice(0,1);
+				attivi.push(n);
+					
+				var ind2 = visibili.indexOf(n);
+				if (ind2 == -1)
+				{
+					if (visibili.length == 4)
+						visibili.splice(0, 1);
+					visibili.push(n);
+				}
+			}
+			visualizza();
+		});
+		
+		$('.sensore').click(function()
+		{
+			var n = parseInt(this.id.replace("sens", ""));
+			var ind = visibili.indexOf(n) ;
+			if (ind != -1)
+			{
+				visibili.splice(ind, 1);
+				var ind2 = attivi.indexOf(n) ;
+				if (ind2 != -1)
+				{
+					attivi.splice(ind2, 1);
+				}
+			}
+			else
+			{
+				if (visibili.length == 4)
+				{
+					visibili.splice(0, 1);
+					attivi.splice(0, 1);
+				}
+				visibili.push(n);
+			}
+			visualizza();
+		});
+		
+		$('.led').click(function()
+		{
+			var n = parseInt(this.id.replace("led", ""));
+			$("#alarm" + n).toggle('fast');
+		});
+		
+		document.getElementById('BS1').addEventListener( 'click', function(event) 
+		{
+			document.getElementById('side2').className = 'flip flip-side1';
+			document.getElementById('side1').className = 'flip flip-side2';
+		}, false);
+		
+		document.getElementById('BS2').addEventListener( 'click', function(event) 
+		{
+			document.getElementById('side2').className = 'flip';
+			document.getElementById('side1').className = 'flip';
+		}, false);
+		
+		
+		$(document).ready(function () 
+		{
+		   $('#mapsValsDiv').hide();
+		   
+		   //VISUALIZZO NELLA TABELLA LA MAPPA CHE STO MODIFICANDO
+           $('#menu a').click(function()
+		   {
+				var voceMenu = $(this).html();
+				if(voceMenu != "Mappe" && voceMenu != "Cambiata")
+				{
+					//document.getElementById('mapsValsDiv').style.visibility = "visible";
+					$('#mapsValsDiv').show('fast');
+					$('#currentMap').html($(this).html());
+				}
+				else
+				{
+					//document.getElementById('mapsValsDiv').style.visibility = "hidden"
+					$('#mapsValsDiv').hide('fast');
+				}
+		   });
+
+		   // if user is running mozilla then use it's built-in WebSocket
+			for (i = 0; i < numero_sensori; i++){
+				data[i] = [];
+				all_data[i] = [];
+				grafici[i] = $.plot($("#grafico" + i), [data[i]]);
+				min[i] = null;
+				max[i] = null;
+			}
+			
+			$(".alarm").hide();
+			var aopt = 
+			{
+				xaxis: 
+				{
+					min: -3,
+					max:  3
+				},
+				yaxis: 
+				{
+					min: -3,
+					max:  3
+				},
+				series: 
+				{
+					points: 
+					{
+			      		radius: 5,
+						show: true,
+						fill: true 
+			    	},
+					shadowSize: 0,
+				},
+				colors: ['#fff'],
+				grid: 
+				{
+					borderColor: '#fff',
+					color: "#fff", 
+					backgroundColor: '#0c2c7f' 
+				}			
+			};
+			
+			accelData.push([0,0]);
+			accelGraph = $.plot($("#accelerometro"), [accelData], aopt);
+			
+			window.WebSocket = window.WebSocket || window.MozWebSocket;
+
+		    var connection = new WebSocket('ws://'+window.location.hostname+':1337');
+
+		    connection.onopen = function () 
+			{
+		        // connection is opened and ready to use
+				connection.send((new Date()));
+		    };
+
+		    connection.onerror = function (error) 
+			{
+		        // an error occurred when sending/receiving data
+		    };
+			
+			var first = true;
+			var plot;
+			
+			function log2(x)
+			{
+		  		var ans = 0 ;
+		  		while( x >>= 1 ) ans++;
+		  		return ans ;
+			}
+			
+		    connection.onmessage = function (message) 
+			{
+		        var json = JSON.parse(message.data);
+				$(function () 
+				{
+					if (json[0] == "lista_sensori") //caso: ci arriva la lista dei sensori.. COSA METTIAMO DENTRO L'IF?
+					{	
+						numero_sensori = json.length() -1;
+						
+						for (int i=1; i < json.length(); i++)
+						{
+							//AGGIUNGI IL GRAFICO i DI NOME json[i]
+							$("#grafici").append("<div id=\"container" + i-1 + "\"><div class=\"container\" id=\"cont" + i-1 + "\"><table><tr><td id=\"name" + i-1 + "\">" + json[i] + "</td><td>min</td><td>max</td></tr><tr><td id=\"value" + i-1 + "\"></td><td id=\"min" + i-1 + "\"></td><td id=\"max" + i-1 +"\"></td></tr></table></div><div id=\"grafico"+ i-1 + "\" class=\"graph\"></div></div>");
+							//AGGIUNGI NELLA RIGHTBAR IL PULSANTE i DI NOME json[i]
+							$("#rightbar").append("<div class=\"spie\" id=\"spia" + i-1 + "\"><img class=\"led\" src=\"./images/led_off.png\" id=\"led" + i-1 + "\"/> <span class=\"sensore\" id=\"sens" + i-1 + "\">" + json[i] + "</span> <img id=\"play" + i-1 + "\" class=\"playpause\" src=\"./images/play_butt.png\" /><div class=\"alarm\" id=\"alarm" + i-1 + "\">Min: <input type=\"text\" id=\"alMin" + i-1 + "\" /><input type=\"checkbox\" id=\"alMinEn" + i-1 + "\" /><br />Max: <input type=\"text\" id=\"alMax" + i-1 + "\" /><input type=\"checkbox\" id=\"alMaxEn" + i-1 + "\" /></div></div>");
+						}
+						
+						if (typeof(Storage) !== "undefined") {
+							if (json === JSON.parse(localStorage.getItem(listaSensori)){
+							
+								if(localStorage.getItem('visibili') != null && localStorage.getItem('attivi') != null && localStorage.getItem('ordineGraf') != null)
+  								{
+  									visibili = JSON.parse(localStorage.getItem('visibili'));
+  									attivi = JSON.parse(localStorage.getItem('attivi'));
+  									ordineGraf = JSON.parse(localStorage.getItem('ordineGraf'));
+  								}
+  								else
+  								{
+  									visibili = [0,1,2,3];
+  									attivi = [0,1,2,3];
+  									for(int i=0; i< numero_sensori; i++)
+  									{
+  										ordineGraf[i] = i;
+  									}
+  								}	
+							}
+							else {
+							//se supporta il localStorage ci salviamo la listaSensori
+							{
+								visibili = [0,1,2,3];
+  								attivi = [0,1,2,3];
+  								for(int i=0; i< numero_sensori; i++)
+  								{
+  									ordineGraf[i] = i;
+  								}
+								
+								localStorage.setItem('listaSensori', JSON.stringify(json));
+								localStorage.setItem('attivi', JSON.stringify(attivi));
+								localStorage.setItem('visibili', JSON.stringify(visibili));
+								localStorage.setItem('ordineGraf', JSON.stringify(ordineGraf));
+							}
+						}
+						else
+						{
+							visibili = [0,1,2,3];
+  							attivi = [0,1,2,3];
+  							for(int i=0; i< numero_sensori; i++)
+  							{
+  								ordineGraf[i] = i;
+  							}
+						}	
+						
+					
+						 //ORDINAMENTO GRAFICI
+ 						 $('#container' + ordineGraf[0]).prependTo('#grafici');
+ 						 $('#spia' + ordineGraf[0]).prependTo('#rightbar');
+ 						 for(var counter = 1; counter<ordineGraf.length; counter++)
+ 						 {
+ 						 	$('#container' + ordineGraf[counter]).insertAfter('#container' + ordineGraf[counter-1]);
+ 						 	$('#spia' + ordineGraf[counter]).insertAfter('#spia' + ordineGraf[counter-1]);
+ 						 }	
+ 						 
+ 						 giri = new Speedometer ('giri', {theme: 'default', display: false, glossy: true, min: 0, max: 15, thresPivot: 14.25, threshold:3.5});
+           				 giri.draw ();
+						 giroscopio = new Speedometer ('giroscopio', {theme: 'giroscopio', display: false, glossy: true, min: -150, max: 150, thresPivot: 0, threshold:300});
+						 giroscopio.draw();
+						 visualizza();
+					}
+					else {
+						//caso: ci arrivano i dati
+					
+					//ARRIVATO IL PACCHETTO JSON: CREO I GRAFICI PER I SENSORI
+					
+					
+					
+					
+					/*ARRIVATO IL PACCHETTO JSON: CREO I GRAFICI PER I SENSORI - OLD
+					giri.update(json.data[15]);
+					giroscopio.update(json.data[14]);
+						
+					document.getElementById('pFarfalla').value = json.data[7];
+					document.getElementById('pFrenoAnt').value = json.data[8];
+					document.getElementById('pFrenoPost').value = json.data[9];
+					ripart = (200*json.data[8])/(2*json.data[8]+json.data[9])).toFixed(1);
+					try
+					{
+						document.getElementById('pRipart').value = parseFloat(ripart);
+						document.getElementById('vRipart').innerHTML = parseFloat(ripart).toFixed(1);
+					}
+					catch(err) 
+					{
+						document.getElementById('pRipart').value = 0;
+						document.getElementById('vRipart').innerHTML = parseFloat(0.0).toFixed(1);
+					};
+					
+					document.getElementById('pFrizione').value=json.data[11];
+					document.getElementById('vFarfalla').innerHTML=(json.data[7]).toFixed(1);
+					document.getElementById('vFrenoAnt').innerHTML=(json.data[8]).toFixed(1);
+					document.getElementById('vFrenoPost').innerHTML=(json.data[9]).toFixed(1);
+					
+					//document.getElementById('vRipart').innerHTML=ripart;
+					//if(json.data[9]<=6)
+					display.setValue(json.data[18]);
+							
+					document.getElementById('vFrizione').innerHTML=(json.data[11]).toFixed(1);
+						
+					if(parseInt(json.data[17])<=64 && parseInt(json.data[17])>0)
+						document.getElementById('mappa').innerHTML=mappe[log2(parseInt(json.data[17]))];
+					if(parseInt(json.data[19])<=64 && parseInt(json.data[19])>0)
+						document.getElementById('tracLevel').innerHTML=livtrac[log2(parseInt(json.data[19]))];
+					if(parseInt(json.data[20])<=64 && parseInt(json.data[20])>0)
+						document.getElementById('rot3').innerHTML=rotary3[log2(parseInt(json.data[20]))];
+								
+					document.getElementById('tracCou').innerHTML=json.data[21];
+					document.getElementById('deltaAnt').innerHTML=json.data[22];
+					
+					document.getElementById('speed').innerHTML=json.data[16];
+					accelData.pop();
+					accelData.push([json.data[12],json.data[13]]);
+					accelGraph.setData([accelData]);
+					accelGraph.draw();*/
+						
+					for (l = 0; l < numero_sensori; l++) 
+					{
+						if (l < visibili.length) 
+						{
+							k = visibili[l];
+							all_data[k].push([(new Date(json.time)).getTime(), json.data[k]]);
+							data[k].push([(new Date(json.time)).getTime(), json.data[k]]);
+						
+							if (data[k].length > 110)
+							{
+								data[k].shift();
+							}
+							if (all_data[k].length > 300)
+							{
+								all_data[k].shift();
+							}
+							var opt=
+							{
+								xaxis: { 
+									mode: "time",
+									min: (new Date(json.time)).getTime()-10000 
+									},
+	        					zoom: 
+								{
+            						interactive: true
+        						},
+        						pan: 
+								{
+            						interactive: true
+        						},
+								series: 
+								{ 
+									shadowSize: 0 
+								},
+								colors: ['red'],
+							};
+							if(visibili.indexOf(k) != -1 && attivi.indexOf(k) != -1)
+							{
+								grafici[k] = $.plot($("#grafico" + k), [data[k]], opt);
+							}
+							
+							
+							$("#value" + k).html(json.data[k]);
+							if(min[k] == null)
+								min[k] = json.data[k];
+							if(max[k] == null)
+								max[k] = json.data[k];
+								
+							if(json.data[k] < min[k])
+							{
+								min[k] = json.data[k];
+								$("#min" + k).html(min[k]);
+							}
+							if(json.data[k] > max[k])
+							{ 
+								max[k] = json.data[k];
+								$("#max"+k).html(max[k]);
+							}					
+						}
+						
+						if((json.data[l] >= parseFloat(document.getElementById('alMax' + l).value) && document.getElementById('alMaxEn' + l).checked) 
+							|| (json.data[l] <= parseFloat(document.getElementById('alMin' + l).value) && document.getElementById('alMinEn' + l).checked))
+						{
+							document.getElementById('led' + l).src='./images/led_red.png';
+							//setTimeout(function(){
+							var ind = attivi.indexOf(l) ;
+							if (ind != -1)
+							{
+								attivi.splice(ind,1);
+								grafici[ind].setData([all_data[ind]]);
+								grafici[ind].setupGrid();
+								grafici[ind].draw();
+								visualizza();
+							}	
+							//}, 1000);
+						}
+					}}
+				});
+		    };
+		});
+    
+    	</script>
+    </body>
+</html>
