@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<meta charset="utf-8">
+        <title>UniBO MotorSport - Telemetry System</title>
+		<link rel="shortcut icon" href="./images/favicon-logo.ico"/>
+    </head>
+    <body>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    
+    <div id="leftbar">
+			<div id="side1" class="flip">
+				<div id="giri">
+				</div>
+				<div id="accContainer">
+					<div id="accelerometro">
+					</div>
+				</div>
+				<div id="giroscopio">
+				</div>
+				<br><br>
+				<center><button id="BS1">Car Control Panel</button></center>
+			</div>
+			<div id="side2" class = "flip">
+				<ul id="menu">
+					<li>
+						<a href="#">Mappe</a>
+						<ul>
+							<li>
+								<a href="#">Skid Pad</a>
+							</li>
+							<li>
+								<a href="#">Acceleration</a>
+							</li>
+							<li>
+								<a href="#">Fuel Eco WET</a>
+							</li>
+							<li>
+								<a href="#">Fuel Eco DRY</a>
+							</li>
+							<li>
+								<a href="#">Power WET</a>
+							</li>
+							<li>
+								<a href="#">Power DRY</a>
+							</li>
+						</ul>
+					<li>
+					<li>
+						<a href="#">Cambiata</a>
+						<ul>
+							<li>
+								<a href="#">Default</a>
+							</li>
+							<li>
+								<a href="#">Racing</a>
+							</li>
+							<li>
+								<a href="#">Test</a>
+							</li>
+						</ul>
+					<li>
+				</ul>
+				<div id="mapsValsDiv">
+					<table id="mapsValTab" width=200px>
+						<span><caption id="currentMap"></caption></span>
+						<tr>
+							<td id="par0">ciao</td>
+							<td id="valpar0"></td>
+						</tr>
+						<tr>
+							<td id="par1">ciao</td>
+							<td id="valpar0"></td>
+						</tr>
+						<tr>
+							<td id="par2">ciao</td>
+							<td id="valpar0"></td>
+						</tr>
+					</table>
+				</div>
+				<br><br>	
+				<center><button id="BS2">Stats Graphs Panel</button></center>
+				<button onclick="toFSmode()">Enter Fullscreen mode (Document)</button>
+			</div>
+		</div>
+		
+		<div id="rightbar">
+		</div>
+		
+		<div id="header">
+			<div style="float: left;">
+				<table>
+				<tr>
+					<td><span>Thr</span></td>
+					<td><meter min="0" max="100" class="barre1" id="pThrottle_Ang" value="50"></meter></td>
+					<td><span id="vThrottle_Ang"></span>%</td>
+				</tr>
+				<tr>
+					<td><span>P Brake F</span></td>
+					<td><meter min="0" max="100" class="barre1" id="pP_Brake_F" value="50"></meter></td>
+					<td><span id="vP_Brake_F"></span>%</td>
+				</tr>
+				<tr>
+					<td><span>P Brake R</span></td>
+					<td><meter min="0" max="100" class="barre1" id="P_Brake_R" value="50"></meter></td>
+					<td><span id="vP_Brake_R"></span>%</td>
+				</tr>
+				<tr>
+					<td>Brake Bal</td>
+					<td><meter min="0" max="100" class="barre1" id="pRipart" value="50"></meter></td>
+					<td><span id="vRipart"></span>%</td>
+				</tr>
+				<tr>
+					<td>Clutch Pos</td>
+					<td><meter min="0" max="100" class="barre1" id="pClutch_Pos" value="50"></meter></td>
+					<td><span id="vClutch_Pos"></span>%</td>
+				</tr>
+				</table>
+			</div>
+			<div  style="float: right; width: 75px;">
+
+					<canvas id="display" width="70" height="90" >
+					</canvas>
+					km/h <span id="Speed"></span>
+			</div>
+			<div style="float: right;">
+				<table style="margin-left: 30px;">
+					<tr>
+						<td>Map</td><td><span id="Map"></span></td>
+					</tr>
+					<tr>
+						<td>TCS Level</td><td><span id="TCS_Lev"></span></td>
+					</tr>
+					<tr>
+						<td>LCS</td><td><span id="rot3"></span></td>
+					</tr>
+					<tr>
+						<td>TCS count</td><td><span id="TCS_Count"></span></td>
+					</tr>
+					<tr>
+						<td>&Delta; Ant</td><td><span id="Ign_Adv"></span></td>
+					</tr>
+				</table>
+				
+			</div>
+		</div>
+		
+		<div id="grafici">
+		</div>
+		
+		<!--CARICAMENTO LIBRERIE-->
+        <script src="./js/jquery.js"></script>
+		<script src="./js/jquery.flot.js"></script>
+		<script type="text/javascript" src="./speedometer/digitaldisplay.js"></script>
+        <script type="text/javascript" src="/speedometer/speedometer.js"></script>
+        <script type="text/javascript" src="./speedometer/themes/default.js"></script>
+		<script type="text/javascript" src="/speedometer/xcanvas.js"></script>
+        <script type="text/javascript" src="/speedometer/tbe.js"></script>
+		<script type="text/javascript" src="./segment/segment-display.js"></script>
+		<script src="./js/jqueryui.min.js"></script>
+		<script language="javascript" type="text/javascript" src="./js/jquery.flot.navigate.js"></script>
+		<script type="text/javascript" src="./js/jquery.fullscreen-min.js"></script>
+
+		
+        <script>
+        //--> Da mettere in un file .js una volta finito!!! <--
+    	
+    	function toFSmode()
+		{
+			$(document).fullScreen(true);
+		}
+		
+		var data = [];
+		var all_data = [];
+		var t = 0;
+		var min = [],max = [];
+		
+		var grafici = [];
+		var hidden = [];
+		var paused = [];
+		var giri;
+		var accelGraph;
+		var accelData = [];
+		var giroscopio;
+		var alertSound;
+		var visibili = [];
+		var attivi = [];
+		var listaBooleanSensori = []; //contiene i sensori con scritto true o false
+		var menuAttivo = null;
+		var json;
+		var primo_messaggio = true;
+		var nomi_sensori; //array contentene i nomi di tutti i sensori
+		var ordineGraf; //array che contiene i nomi dei grafici ordinati..
+		
+		var mappe = ['Pow Dry', 'Pow Wet', 'Eco Dry', 'Eco Wet', 'Accel', 'Skid Pad'];
+		var livtrac = ['5', '4', '3', '2', '1', 'Off'];
+		var rotary3 = ['Off', '1', '2', '3', '4', '5'];
+		
+		var display = new SegmentDisplay("display");
+	  	display.pattern         = "#";
+	  	display.displayAngle    = 6;
+	  	display.digitHeight     = 20;
+	  	display.digitWidth      = 11.5;
+	  	display.digitDistance   = 2.5;
+	  	display.segmentWidth    = 2;
+	  	display.segmentDistance = 0.3;
+	  	display.segmentCount    = 7;
+	  	display.cornerType      = 3;
+	  	display.colorOn         = "#d3031b";
+	  	display.colorOff        = "lightgray";
+	  	display.draw();
+	  	
+	  	//EHM A COSA MI SERVE E COME LA USO? VEDI IN FONDO...
+	  	var sensor = null;
+	  	
+	  	function visualizza()
+		{
+			var h, pos;
+
+			for(h=0; h<nomi_sensori.length; h++)
+			{
+				if (listaBooleanSensori[nomi_sensori[h]] == true)
+				{
+					if (attivi.indexOf(nomi_sensori[h]) != -1) 
+					{
+						document.getElementById('play' + nomi_sensori[h])
+						document.getElementById('play' + nomi_sensori[h]).src='./images/pause_butt.png';
+					}
+					else 
+					{
+						document.getElementById('play' + nomi_sensori[h]).src='./images/play_butt.png';
+					}
+				
+					if (visibili.indexOf(nomi_sensori[h]) != -1) 
+					{
+						document.getElementById('sens' + nomi_sensori[h]).style.color="lightgreen";
+					
+					/* DISABILITAZIONE ZOOM CON GRAFICO IN PLAY, DA SISTEMARE
+					if (attivi.indexOf(h) != -1)
+					{
+						var opt=
+						{
+							xaxis:
+							{
+								mode: "time",
+								min: all_data[n][all_data[n].length-1]-10000 //10000 o 100???
+							},
+	        				zoom: 
+							{
+            					interactive: false
+        					},
+        					pan: 
+							{
+            					interactive: false
+        					},
+							series: 
+							{ 
+								shadowSize: 0 
+							},
+							colors: ['red'],
+						};
+					grafici[ind]=$.plot($("#grafico" + n),[all_data[n]], opt);
+					}*/
+					
+						$(nomi_sensori[h]).show('fast');
+						$("#container" + nomi_sensori[h]).show('fast');
+					}
+					else 
+					{
+						document.getElementById('sens' + nomi_sensori[h]).style.color="darkgray";
+						$(nomi_sensori[h]).hide('fast');
+						$("#container" + nomi_sensori[h]).hide('fast');
+					}
+				}			
+			}
+			//SALVO L'ATTUALE ORDINE DEI GRAFICI NEL LOCAL STORAGE, se lo supporto
+			if(typeof(Storage) !== "undefined") {
+				localStorage.setItem('attivi', JSON.stringify(attivi));
+				localStorage.setItem('visibili', JSON.stringify(visibili));
+				//localStorage.setItem('listaBooleanSensori', JSON.stringify(listaBooleanSensori)); serve?
+				localStorage.setItem('ordineGraf', JSON.stringify(ordineGraf));
+			}
+		}
+	
+		
+			
+			
+		
+		document.getElementById('BS1').addEventListener( 'click', function(event) 
+		{
+			document.getElementById('side2').className = 'flip flip-side1';
+			document.getElementById('side1').className = 'flip flip-side2';
+		}, false);
+		
+		document.getElementById('BS2').addEventListener( 'click', function(event) 
+		{
+			document.getElementById('side2').className = 'flip';
+			document.getElementById('side1').className = 'flip';
+		}, false);
+		
+		//DA MODIFICARE
+		$(document).ready(function () 
+		{
+		   $('#mapsValsDiv').hide();
+		   
+		   //VISUALIZZO NELLA TABELLA LA Map CHE STO MODIFICANDO
+           $('#menu a').click(function()
+		   {
+				var voceMenu = $(this).html();
+				if(voceMenu != "Mappe" && voceMenu != "Cambiata")
+				{
+					//document.getElementById('mapsValsDiv').style.visibility = "visible";
+					$('#mapsValsDiv').show('fast');
+					$('#currentMap').html($(this).html());
+				}
+				else
+				{
+					//document.getElementById('mapsValsDiv').style.visibility = "hidden"
+					$('#mapsValsDiv').hide('fast');
+				}
+		   });
+
+			/*
+			//QUESTO VA TOLTO O SPOSTATO, NON POSSIAMO PLOTTARE I GRAFICI PRIMA DEL PRIMO MESSAGGIO!
+			// if user is running mozilla then use it's built-in WebSocket
+			for (i = 0; i < nomi_sensori.length; i++){
+				data[i] = [];
+				all_data[i] = [];
+				grafici[i] = $.plot($("#grafico" + i), [data[i]]);
+				min[i] = null;
+				max[i] = null;
+			}
+			//FINO A QUA
+			*/
+			
+			
+			var aopt = 
+			{
+				xaxis: 
+				{
+					min: -3,
+					max:  3
+				},
+				yaxis: 
+				{
+					min: -3,
+					max:  3
+				},
+				series: 
+				{
+					points: 
+					{
+			      		radius: 5,
+						show: true,
+						fill: true 
+			    	},
+					shadowSize: 0,
+				},
+				colors: ['#fff'],
+				grid: 
+				{
+					borderColor: '#fff',
+					color: "#fff", 
+					backgroundColor: '#0c2c7f' 
+				}			
+			};
+			
+			accelData.push([0,0]);
+			accelGraph = $.plot($("#accelerometro"), [accelData], aopt);
+			
+			window.WebSocket = window.WebSocket || window.MozWebSocket;
+
+		    var connection = new WebSocket('ws://'+window.location.hostname+':1337');
+
+		    connection.onopen = function () 
+			{
+		        // connection is opened and ready to use
+		        primo_messaggio = true;
+				connection.send((new Date()));
+		    };
+
+		    connection.onerror = function (error) 
+			{
+		        // an error occurred when sending/receiving data
+		    };
+			
+			var first = true;
+			var plot;
+			
+			function log2(x)
+			{
+		  		var ans = 0 ;
+		  		while( x >>= 1 ) ans++;
+		  		return ans ;
+			}
+			
+		    connection.onmessage = function (message) 
+			{
+		       	json = JSON.parse(message.data);
+		     	
+		     	//correggere da qua in giù... qualcosa non va!
+				$(function () 
+				{
+					var i;
+					if (primo_messaggio)
+					{	
+						primo_messaggio = false;
+						
+						
+						nomi_sensori = Object.keys(json);
+						
+						for (i=0; i < nomi_sensori.length; i++)
+						{
+							if (json[nomi_sensori[i]] == true) {
+							//AGGIUNGI IL GRAFICO i DI NOME json[i]
+							$("#grafici").append("<div id=\"container" + nomi_sensori[i] + "\"><div class=\"container\" id=\"cont" + nomi_sensori[i] + "\"><table><tr><td id=\"name" + nomi_sensori[i] + "\">" + nomi_sensori[i] + "</td><td>min</td><td>max</td></tr><tr><td id=\"value" + nomi_sensori[i] + "\"></td><td id=\"min" + nomi_sensori[i] + "\"></td><td id=\"max" + nomi_sensori[i] +"\"></td></tr></table></div><div id=" + nomi_sensori[i] + " class=\"graph\"></div></div>");
+							//AGGIUNGI NELLA RIGHTBAR IL PULSANTE i DI NOME json[i]
+							$("#rightbar").append("<div class=\"spie\" id=\"spia" + nomi_sensori[i] + "\"><img class=\"led\" src=\"./images/led_off.png\" id=\"led" + nomi_sensori[i] + "\"/> <span class=\"sensore\" id=\"sens" + nomi_sensori[i] + "\">" + nomi_sensori[i] + "</span> <img id=\"play" + nomi_sensori[i] + "\" class=\"playpause\" src=\"./images/play_butt.png\" /><div class=\"alarm\" id=\"alarm" + nomi_sensori[i] + "\">Min: <input type=\"text\" id=\"alMin" + nomi_sensori[i] + "\" /><input type=\"checkbox\" id=\"alMinEn" + nomi_sensori[i] + "\" /><br />Max: <input type=\"text\" id=\"alMax" + nomi_sensori[i] + "\" /><input type=\"checkbox\" id=\"alMaxEn" + nomi_sensori[i] + "\" /></div></div>");
+							data[i] = [];
+							all_data[i] = [];
+							
+							min[i] = null;
+							max[i] = null;
+							}
+						}
+						
+						
+						
+						
+						
+						if (typeof(Storage) !== "undefined") 
+						{
+							if (localStorage.getItem('listaBooleanSensori') != null && json === JSON.parse(localStorage.getItem('listaBooleanSensori')))
+							{
+								
+									if(localStorage.getItem('visibili') != null && localStorage.getItem('attivi') != null && localStorage.getItem('ordineGraf') != null)
+  									{
+  										visibili = JSON.parse(localStorage.getItem('visibili'));
+  										attivi = JSON.parse(localStorage.getItem('attivi'));
+  										listaBooleanSensori = JSON.parse(localStorage.getItem('listaBooleanSensori'));
+  										ordineGraf = JSON.parse(localStorage.getItem('ordineGraf'));
+  									}
+  									else
+  									{
+  										visibili = [nomi_sensori[0],nomi_sensori[1],nomi_sensori[2],nomi_sensori[3]];
+  										attivi = [nomi_sensori[0],nomi_sensori[1],nomi_sensori[2],jnomi_sensori[3]];
+  										
+  										listaBooleanSensori = json;
+  										ordineGraf = nomi_sensori;
+  									}	
+							}
+							else
+							{
+								//se supporta il localStorage ci salviamo la listaBooleanSensori
+								visibili = [nomi_sensori[0],nomi_sensori[1],nomi_sensori[2],nomi_sensori[3]];	
+  								attivi = [nomi_sensori[0],nomi_sensori[1],nomi_sensori[2],nomi_sensori[3]];
+  										
+  								listaBooleanSensori = json;
+  								ordineGraf = nomi_sensori;
+								
+								localStorage.setItem('listaBooleanSensori', JSON.stringify(json));
+								localStorage.setItem('attivi', JSON.stringify(attivi));
+								localStorage.setItem('visibili', JSON.stringify(visibili));
+								localStorage.setItem('ordineGraf', JSON.stringify(ordineGraf));
+							}
+						}
+						else
+						{
+							visibili = [nomi_sensori[0],nomi_sensori[1],nomi_sensori[2],nomi_sensori[3]];		
+  							attivi = [nomi_sensori[0],nomi_sensori[1],nomi_sensori[2],nomi_sensori[3]];
+  										
+  							listaBooleanSensori = json;
+  							ordineGraf = nomi_sensori;
+						}	
+						
+						$(".alarm").hide();
+						
+						//ORDINAMENTO GRAFICI	
+						var counter;
+ 						 $('#container' + ordineGraf[0]).prependTo('#grafici');
+ 						 $('#spia' + ordineGraf[0]).prependTo('#rightbar');
+ 						 for(counter = 1; counter<ordineGraf.length; counter++)
+ 						 {
+ 						 	$('#container' + ordineGraf[counter]).insertAfter('#container' + ordineGraf[counter-1]);
+ 						 	$('#spia' + ordineGraf[counter]).insertAfter('#spia' + ordineGraf[counter-1]);
+ 						 }	
+ 						 
+ 						 giri = new Speedometer ('giri', {theme: 'default', display: false, glossy: true, min: 0, max: 15, thresPivot: 14.25, threshold:3.5});
+           				 giri.draw ();
+						 giroscopio = new Speedometer ('giroscopio', {theme: 'giroscopio', display: false, glossy: true, min: -150, max: 150, thresPivot: 0, threshold:300});
+						 giroscopio.draw();
+						 visualizza();
+						 
+						 
+						//cambiamo solo ordineGraf o anche nomi_sensori e listaBooleanSensori????
+						//ABILITO ORDINAMENTO DRAG&DROP DEI GRAFICI
+						$('#rightbar').sortable
+						({
+							stop: function(event, ui)
+							{
+								var grafPos;
+								grafPos = $(this).sortable('toArray');
+								var indiceArrivo;
+								indiceArrivo = grafPos.indexOf(ui.item[0].id);
+								var indicePartenza;
+								indicePartenza = ui.item[0].id.replace('spia','');
+								
+								
+								//bisogna testare se li stampa giusti
+								//console.log("Indice d'arrivo: " + indiceArrivo + ", indice di parenza: " + indicePartenza);
+								
+								if(indiceArrivo > ordineGraf.indexOf(indicePartenza))
+								{
+									for(counter = ordineGraf.indexOf(indicePartenza); counter < indiceArrivo; counter++)
+									{
+										ordineGraf[counter] = ordineGraf[counter+1];
+									}
+								}
+								else
+								{
+									for(counter = ordineGraf.indexOf(indicePartenza); counter > indiceArrivo; counter--)
+									{
+										ordineGraf[counter] = ordineGraf[counter-1];
+									}
+								}
+								
+								ordineGraf[indiceArrivo] = indicePartenza;
+								//listaBooleanSensori[ordineGraf[indiceArrivo]] = ui.item[0].id;
+
+								if(indiceArrivo != -1)
+								{
+									if(indiceArrivo == 0)
+									{
+										$('#' + ui.item[0].id.replace('spia','container')).prependTo('#grafici');
+									}
+									else
+									{
+										$('#' + ui.item[0].id.replace('spia','container')).insertAfter('#'+ grafPos[indiceArrivo-1].replace('spia', 'container'));
+									}
+									visualizza();
+								}
+							}
+						});
+						
+						$('#rightbar').disableSelection();
+						
+						
+						
+						$('.playpause').click(function()
+						{
+							var n = this.id.replace("play","");
+							var ind = attivi.indexOf(n) ;
+							document.getElementById('led' + n).src='./images/led_off.png';
+							
+							if (ind != -1)
+							{
+								attivi.splice(ind,1);
+								var opt=
+								{
+									xaxis:
+									{
+										mode: "time",
+										min: all_data[nomi_sensori.indexOf(n)][all_data[nomi_sensori.indexOf(n)].length-1]-10000
+									},
+	        						zoom: 
+									{
+    		        					interactive: true
+        							},
+        							pan: 
+									{
+            							interactive: true
+        							},
+									series: 
+									{ 
+										shadowSize: 0 
+									},
+									colors: ['red'],
+								};
+								//grafici[ind]?? array degli oggetti grafico!
+								grafici[ind] = $.plot(document.getElementById(n), [all_data[nomi_sensori.indexOf(n)]], opt);
+							}
+							else
+							{
+								if (attivi.length == 4) 
+									attivi.splice(0,1);
+							
+								attivi.push(n);
+					
+								var ind2 = visibili.indexOf(n);
+								
+								if (ind2 == -1)
+								{
+									if (visibili.length == 4)
+										visibili.splice(0, 1);
+									
+									visibili.push(n);
+								}
+							}
+							visualizza();
+						});
+			
+						$('.sensore').click(function()
+						{
+							var n = this.id.replace("sens", "");
+							var ind = visibili.indexOf(n) ;
+							if (ind != -1)
+							{
+								visibili.splice(ind, 1);
+								var ind2 = attivi.indexOf(n) ;
+								if (ind2 != -1)
+								{
+									attivi.splice(ind2, 1);
+								}
+							}
+							else
+							{
+								if (visibili.length == 4)
+								{
+									visibili.splice(0, 1);
+									attivi.splice(0, 1);
+								}
+							visibili.push(n);
+							}
+							visualizza();
+						});
+		
+						$('.led').click(function()
+						{
+							var n = this.id.replace("led", "");
+							$("#alarm" + n).toggle('fast');
+						});
+						 
+		
+					}
+					else 
+					{
+						//caso: ci arrivano i dati.. funziona??
+					
+					//ARRIVATO IL PACCHETTO JSON: CREO I GRAFICI PER I SENSORI
+					//console.log("Ci arrivano i dati!");
+					
+					var ripart;
+					giri.update(json.RPM);
+					giroscopio.update(json.Gyro);
+					
+					//piccolo test se troviamo i valori.. che dovrebbe essere giusto se non ricordo male
+					document.getElementById('pThrottle_Ang').value = json.data.Throttle_Ang;
+					document.getElementById('pP_Brake_F').value = json.data.P_Brake_F;
+					document.getElementById('P_Brake_R').value = json.data.P_Brake_R;
+					
+					ripart = 200*json.data.P_Brake_F/(2*json.data.P_Brake_F+(json.data.P_Brake_R).toFixed(1));
+					try {
+						document.getElementById('pRipart').value = parseFloat(ripart);
+						document.getElementById('vRipart').innerHTML = parseFloat(ripart).toFixed(1);
+					}
+					catch(err)
+					{
+						document.getElementById('pRipart').value = 0;
+						document.getElementById('vRipart').innerHTML = parseFloat(0.0).toFixed(1);
+					}
+					
+					document.getElementById('pClutch_Pos').value= json.data.Clutch_Pos;
+															
+					document.getElementById('vThrottle_Ang').innerHTML= parseFloat(json.data.Throttle_Ang).toFixed(1);
+					document.getElementById('vP_Brake_F').innerHTML= parseFloat(json.data.P_Brake_F).toFixed(1);
+					document.getElementById('vP_Brake_R').innerHTML= parseFloat(json.data.P_Brake_R).toFixed(1);
+					
+					display.setValue(json.data.Gear);
+					
+					if(parseInt(json.data.Map)<=64 && parseInt(json.data.Map)>0)
+						document.getElementById('Map').innerHTML=mappe[log2(parseInt(json.data.Map))];
+					if(parseInt(json.data.TCS_Lev)<=64 && parseInt(json.data.TCS_Lev)>0)
+						document.getElementById('TCS_Lev').innerHTML=livtrac[log2(parseInt(json.data.TCS_Lev))];
+					if(parseInt(json.data.LCS)<=64 && parseInt(json.data.LCS)>0)
+						document.getElementById('rot3').innerHTML=rotary3[log2(parseInt(json.data.LCS))];
+								
+					document.getElementById('TCS_Count').innerHTML=json.data.TCS_Count;
+					document.getElementById('Ign_Adv').innerHTML=json.data.Ign_Adv;
+					
+					document.getElementById('Speed').innerHTML=json.data.Speed;
+					accelData.pop();
+					accelData.push([json.data.Acc_X,json.data.Acc_Y]);
+					accelGraph.setData([accelData]);
+					accelGraph.draw();
+
+					//FARE PER NOME?
+					//da qua in giù è da correggere
+					var l;
+					for (l=0; l<nomi_sensori.length; l++) 
+					{
+						if (listaBooleanSensori[nomi_sensori[l]])
+						{
+							if (visibili.indexOf(nomi_sensori[l]) != -1) 
+							{
+								//funziona questa push? bisogna stamparsi all_data e data!
+								//console.log("valore " + l + " : " + json.data[nomi_sensori[l]]);
+								all_data[l].push([(new Date(json.time)).getTime(), json.data[nomi_sensori[l]]]);
+								data[l].push([(new Date(json.time)).getTime(), json.data[nomi_sensori[l]]]);
+								//console.log("all_data di " + l + " : " + all_data[l] + ", data: " + data[l]);
+							
+								if (data[l].length > 110)
+								{
+									data[l].shift();
+								}
+								if (all_data[l].length > 300)
+								{
+									all_data[l].shift();
+								}
+								var opt=
+								{
+									xaxis: { 
+										mode: "time",
+										min: (new Date(json.time)).getTime()-10000 
+										},
+	        						zoom: 
+									{
+            							interactive: true
+        							},
+        							pan: 
+									{
+            							interactive: true
+        							},
+									series: 
+									{ 
+										shadowSize: 0 
+									},
+									colors: ['red'],
+								};
+								
+								
+								if(visibili.indexOf(nomi_sensori[l]) != -1 && attivi.indexOf(nomi_sensori[l]) != -1)
+								{
+									//console.log("log: " + nomi_sensori.length);
+									//grafici[l] = $.plot($(nomi_sensori[l]), [data[l]], opt);
+									grafici[l] = $.plot(document.getElementById(nomi_sensori[l]), [data[l]], opt);
+								}
+							
+								//questo era sbagliato prima!
+								$("#value" + nomi_sensori[l]).html(json.data[l]);
+								
+								if(min[l] == null)
+									min[l] = json.data[nomi_sensori[l]];
+								if(max[l] == null)
+									max[l] = json.data[nomi_sensori[l]];
+								
+								if(json.data[nomi_sensori[l]] < min[l])
+								{
+									min[l] = json.data[nomi_sensori[l]];
+									$("#min" + l).html(min[l]);
+								}
+								if(json.data[nomi_sensori[l]] > max[l])
+								{ 
+									max[l] = json.data[nomi_sensori[l]];
+									$("#max"+ l).html(max[l]);
+								}					
+							}
+							//console.log(document.getElementById('alMax' + nomi_sensori[l]));
+							//console.log(document.getElementById('alMax' + nomi_sensori[l]).value);
+							//console.log(nomi_sensori[l]);
+							//if (listaBooleanSensori[nomi_sensori[l]] == true){ // questo che controllo è? è uguale a quello sopra!
+							if((json.data[l] >= parseFloat(document.getElementById('alMax' + nomi_sensori[l]).value) && document.getElementById('alMaxEn' + nomi_sensori[l]).checked) 
+								|| (json.data[l] <= parseFloat(document.getElementById('alMin' + nomi_sensori[l]).value) && document.getElementById('alMinEn' + nomi_sensori[l]).checked))
+							{
+								document.getElementById('led' + nomi_sensori[l]).src='./images/led_red.png';
+								//setTimeout(function(){
+								var ind;
+								ind = attivi.indexOf(nomi_sensori[l]) ;
+								if (ind != -1)
+								{
+									attivi.splice(ind,1);
+									grafici[ind].setData([all_data[ind]]);
+									grafici[ind].setupGrid();
+									grafici[ind].draw();
+									visualizza();
+								}	
+									//}, 1000);
+							}
+							//}
+						}//se il sensore è da plottare
+					}//for per ogni sensore
+				}//else (pacchetto con i dati)
+			});//function
+		}//on_message
+	});//document ready
+	</script>
+	</body>
+</html>

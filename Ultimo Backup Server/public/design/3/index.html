@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>UniBo Motorsport &middot; Design</title>
+    <link rel="shortcut icon" href="/images/favicon-logo.ico"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/design/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 20px;
+        padding-bottom: 40px;
+      }
+
+      /* Custom container */
+      .container-narrow {
+        margin: 0 auto;
+        max-width: 700px;
+      }
+      .container-narrow > hr {
+        margin: 30px 0;
+      }
+
+      /* Main marketing message and sign up button */
+      .jumbotron {
+        margin: 60px 0;
+        text-align: center;
+      }
+      .jumbotron h1 {
+        font-size: 92px;
+        line-height: 1;
+        font-family: ubmFont;
+      }
+      .jumbotron .btn {
+        font-size: 21px;
+        padding: 14px 24px;
+      }
+
+      /* Supporting marketing content */
+      .marketing {
+        margin: 60px 0;
+      }
+      .marketing p + h4 {
+        margin-top: 28px;
+      }
+      
+      /* merdafont */
+      @font-face {
+		font-family: ubmFont;
+		src: url(/design/fonts/ubmFont.ttf);
+	}
+    </style>
+    <link href="/design/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="/design/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/design/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/design/ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/design/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="/design/ico/apple-touch-icon-57-precomposed.png">
+                                   <link rel="shortcut icon" href="/design/ico/favicon.png">
+  </head>
+
+  <body>
+  
+
+    <div class="container-narrow">
+
+      <div class="jumbotron" style="vertical-align: middle;">
+      	<img src="/images/logo.png" >
+        <h1>Chassis</h1>
+      </div>
+
+      <hr>
+
+      <center>
+      <div style="margin-bottom:80px;">
+      <table class="table">
+      	<thead style="font-weight:bold">
+      	<tr>
+      		<td>ITEM or APPLICATION</td><td>OUTSIDE DIMENSION x WALL THICKNESS</td>
+      	</tr>
+      	</thead>
+      	<tbody>
+      	<tr>
+      		<td>Main & Front Hoops, <br>Shoulder Hanness Mounting Bar</td><td>Round 1.0'' (25.4mm) x 0.095'' (2.4mm) <br>or Round 25.0mm x2.5mm metric</td>
+      	</tr>
+      	<tr>
+      		<td>Side Impact Structure, <br>Front Bulkhead, <br>Roll Hoop Bracing, <br>Driver's Restraint Harness Attachment (except as noted above)</td><td>Round 1.0'' (25.4mm) x 0.065'' (1.65mm) <br>or Round 25.0mm x 1.75mm metric <br>or Round 25.4mm x 1.60mm metric<br><br>or Square 1.0'' x 1.0'' x 0.049'' <br>or Square 25.0mm x 25.0mm x 1.25mm metric <br>or Square 26.0mm x 26.0mm x 1.2mm metric</td>
+      	</tr>
+      	<tr>
+      		<td>Front Bulkhead Support, <br>Main Hoop Bracing Supports</td><td>Round 1.0'' (25.4mm) x 0.049'' (1.25mm) <br>or Round 25.0mm x 1.5 mm metric <br>or Round 26.0mm x 1.2mm metric</td>
+      	</tr>
+      	</tbody>
+      </table>
+      Table of minimum dimensions for steel tubing.
+      </div>
+      
+      <div style="margin-bottom:80px;">
+      <img src="/design/3/sources/2.png" class="img-polaroid">
+      <br><br>
+      FEM analisys.
+      <br>
+      Positioning of loads and constraints.
+      </div>
+      
+      <div style="margin-bottom:80px;">
+      <img src="/design/3/sources/3.png" class="img-polaroid">
+      <br><br>
+      Deformation analysis increased by 1X.
+      </div>
+      
+      <div style="margin-bottom:80px;">
+      <br><br>
+      <table class="table">
+      	<thead style="font-weight:bold">
+      	<tr>
+      		<td>Left Side</td><td></td><td>Right Side</td><td></td><td>Average</td><td></td>
+      	</tr>
+      	<tr>
+      		<td>Rotation [°]</td><td>Stiffness [Nm/°]</td><td>Rotation [°]</td><td>Stiffness [Nm/°]</td><td>Rotation [°]</td><td>Stiffness [Nm/°]</td>
+      	</tr>
+      	</thead>
+      	<tbody>
+      	<tr>
+      		<td>0.0708</td><td>2614.175</td><td>0.0686</td><td>2695.573</td><td>0.070</td><td>2658.874</td>
+      	</tr>
+      	<tr>
+      		<td>0.0690</td><td></td><td>0.0666</td><td></td><td>0.068</td><td></td>
+      	</tr>
+      	<tr>
+      		<td>0.0623</td><td></td><td>0.0601</td><td></td><td>0.061</td><td></td>
+      	</tr>
+      	<tr>
+      		<td>0.0550</td><td></td><td>0.0530</td><td></td><td>0.054</td><td></td>
+      	</tr>
+      	<tr>
+      		<td>0.0494</td><td></td><td>0.0475</td><td></td><td>0.048</td><td></td>
+      	</tr>
+      	<tr>
+      		<td>0.0432</td><td></td><td>0.0415</td><td></td><td>0.042</td><td></td>
+      	</tr>
+      	<tr>
+      		<td>0.0377</td><td></td><td>0.0362</td><td></td><td>0.037</td><td></td>
+      	</tr>
+      	<tr>
+      		<td>0.0331</td><td></td><td>0.0316</td><td></td><td>0.032</td><td></td>
+      	</tr>
+      	<tr>
+      		<td>0.0293</td><td></td><td>0.0280</td><td></td><td>0.029</td><td></td>
+      	</tr>
+      	<tr>
+      		<td>0.0264</td><td></td><td>0.0254</td><td></td><td>0.026</td><td></td>
+      	</tr>
+      	<tr>
+      		<td>0.0247</td><td></td><td>0.0229</td><td></td><td>0.024</td><td></td>
+      	</tr>
+      	<tr>
+      		<td>0.0204</td><td></td><td>0.0181</td><td></td><td>0.019</td><td></td>
+      	</tr>
+      	<tr>
+      		<td>0.0145</td><td></td><td>0.0129</td><td></td><td>0.014</td><td></td>
+      	</tr>
+      	<tr>
+      		<td>0.0070</td><td></td><td>0.0070</td><td></td><td>0.007</td><td></td>
+      	</tr>
+      	<tr>
+      		<td>0.0000</td><td></td><td>0.0000</td><td></td><td>0.000</td><td></td>
+      	</tr>
+      	</tbody>
+      </table>
+      
+      Deformation of the left side, right side and average of the two sides.
+      </div>
+      
+      <div style="margin-bottom:80px;">
+      <img src="/design/3/sources/4.png" class="img-polaroid">
+      <br><br>
+      Trend of rotation in function of the position.
+      </div>
+      
+      <div style="margin-bottom:80px;">
+      <img src="/design/3/sources/5.png" class="img-polaroid">
+      <br><br>
+      Front impact deformation.
+      </div>
+      </center>
+
+      <hr>
+
+      <div class="footer">
+        <p><b>&copy; UniBO MotorSport 2013</b></p>
+      </div>
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="/design/js/jquery.js"></script>
+    <script src="/design/js/bootstrap-transition.js"></script>
+    <script src="/design/js/bootstrap-alert.js"></script>
+    <script src="/design/js/bootstrap-modal.js"></script>
+    <script src="/design/js/bootstrap-dropdown.js"></script>
+    <script src="/design/js/bootstrap-scrollspy.js"></script>
+    <script src="/design/js/bootstrap-tab.js"></script>
+    <script src="/design/js/bootstrap-tooltip.js"></script>
+    <script src="/design/js/bootstrap-popover.js"></script>
+    <script src="/design/js/bootstrap-button.js"></script>
+    <script src="/design/js/bootstrap-collapse.js"></script>
+    <script src="/design/js/bootstrap-carousel.js"></script>
+    <script src="/design/js/bootstrap-typeahead.js"></script>
+
+  </body>
+</html>

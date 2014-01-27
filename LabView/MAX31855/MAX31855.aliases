@@ -1,0 +1,9 @@
+[My Computer]
+My Computer = "192.168.2.88"
+
+[SBRIO]
+SBRIO = "192.168.1.10"
+
+[sbRIO-ALMA]
+sbRIO-ALMA = "192.168.2.20"
+

@@ -1,0 +1,482 @@
+†//Process.title = 'telemetria';
+process.chdir('/home/pi/server');
+var webSocketsServerPort = 1337;
+var portName = '/dev/ttyAMA0';
+
+var WebSocketServer = require('websocket').server;
+var http = require('http');
+var serialport = require("serialport");
+var SerialPort  = require('serialport').SerialPort;
+var clients = [ ];
+
+var exec = require('child_process').exec, child;
+
+var JSON_dataPack;
+var JSON_sensorsList;
+
+var server = http.createServer(function(request, response) 
+{
+    /* Process HTTP request. Since we're writing just WebSockets server
+	we don't have to implement anything.*/
+});
+
+server.listen(webSocketsServerPort, function() 
+{ 
+	console.log((new Date()) + "Server listening on port " + webSocketsServerPort);
+	
+	/*
+	//Funzione che manda valori random per simulare
+	var randValsArray = [];
+	setInterval(function()
+	{
+		for(counter = 0; counter < JSON_dataPack.length; counter++)
+		{
+			randValsArray[counter] = Math.floor(Math.random()*255);
+		}
+		for(counter = 0; counter < clients.length; counter++)
+		{
+        	clients[counter].sendUTF(JSON.stringify({time: (new Date()), data: randValsArray}));
+        }
+        
+	},100);*/
+});
+
+// create the server
+wsServer = new WebSocketServer({httpServer: server});
+
+/*
+//CONVERSIONE VALORI SENSORI MEDIANTE TABELLA CARATTERISTICHE
+function plInt(ch, bits) 
+{
+	if(ch == 'N')
+		return bits;
+	var uf = 0;
+	var npunti = ch.length;
+	for(k = 0; k < npunti-1; k++)
+	{
+		if(bits >= ch[k][0] && bits <= ch[k+1][0])
+		{
+			uf = ch[k][1]+((bits-ch[k][0])*ch[k+1][1]-(bits-ch[k][0])*ch[k][1])/(ch[k+1][0]-ch[k][0]);
+		} 
+		else if (bits < ch[0][0]) 
+		{
+			uf = ch[k][1]+((bits-ch[0][0])*ch[1][1]-(bits-ch[0][0])*ch[0][1])/(ch[1][0]-ch[0][0]);
+		} 
+		else if (bits > ch[npunti-1][0]) 
+		{
+			uf = ch[npunti-2][1]+((bits-ch[npunti-2][0])*ch[npunti-1][1]-(bits-ch[npunti-2][0])*ch[npunti-2][1])/(ch[npunti-1][0]-ch[npunti-2][0]);
+		}
+	}
+	return uf.toFixed(3);
+}
+*/
+
+/*********************************************/
+/************ CARATTERISTICHE ****************/
+/*********************************************/
+
+/*
+car=[
+	[[50, 0.231], [100, 0.502], [150, 0.778], [200, 1.055], [250, 1.331]] //P-Airbox
+	// [[4, 10], [41, 11], [60, 11.5], [78, 12], [111, 13], [139, 14], [153, 14.57], [158, 15], [171, 16], [180, 17], [190, 18], [198, 19], [206, 20], [213, 21], [220, 22], [226, 23], [231, 24], [235, 25], [241, 26], [245, 27], [249, 28], [252, 29]], // Lambda 1
+	// [[3, 0], [50, 1.836], [100, 3.789], [150, 5.742], [200, 7.695], [250, 9.648]], //P-Oil
+	// [[38, 20], [142, 50], [209, 80], [244, 110]], // T-Air
+	// [[8, 0], [13, 10], [20, 20], [25, 25], [30, 30], [44, 40], [62, 50], [85, 60], [111, 70], [140, 80], [170, 90], [200, 100], [228, 110], [253, 120]] , //T-Oil
+	// [[4, 0], [51, 1.836], [101, 3.789], [151, 5.742], [201, 7.695], [251, 9.648]] //p_benza
+	// 'N', // V-Batt
+	// 'N', // GP-Switch
+	// [[64, 0], [87, 33.33], [110, 50], [148, 66.66], [250, 100]], //Angolo farfalla
+	// [[0, 0], [127, 50], [255, 100]], //P-Freno ant 
+	// [[0, 0], [127, 50], [255, 100]], //P-Freno post
+	// [[0, 0], [255, 100]], // Angolo sterzo
+	// [[0, 0], [255, 255]], // Pos frizione
+	// [[15, -3], [56, -2], [97, -1], [139, 0], [178, 1], [217, 2]], //Acc_x
+	// [[15, -3], [56, -2], [97, -1], [139, 0], [178, 1], [217, 2]], //Acc_y
+	// [[21, -150], [58, -100], [95, -50], [132, 0], [168, 50], [205, 100], [241, 150]] //Giroscopio
+	// [[0, 0], [255, 255]], // Giri motore
+	// [[0, 0], [255, 255]], // Velocità
+	// [[0, 0], [255, 255]] // Mappa
+];
+*/
+
+var sp = new SerialPort(portName, {baudrate: 115200, buffersize: 1024, parity: 1, parser: serialport.parsers.readline("\n")}); // instantiate the serial port.
+/*sp.open(portName, 
+{ // portName is instatiated to be COM3, replace as necessary
+   baudRate: 115200, // this is synced to what was set for the Arduino Code
+   dataBits: 8, // this is the default for Arduino serial communication
+   parity: 'none', // this is the default for Arduino serial communication
+   stopBits: 1, // this is the default for Arduino serial communication
+   flowControl: false // this is the default for Arduino serial communication
+});*/
+
+
+/*I sensori possono essere di 2 tipi:
+	- true: sensori da plottare;
+	- false: sensori da non plottare.*/
+	
+var np=0;
+
+sp.on('data', function (data) 
+{
+    var tobesent = data.toString();
+	tobesent = tobesent.split("\t");
+	tobesent.pop();
+	
+	//Converte i valori dei sensori da stringa a numero
+	for(var counter = 0; counter < tobesent.length; counter++) 
+	{
+		tobesent[counter] = +tobesent[counter];
+	}
+
+	//console.log("Engine 1",tobesent[0],tobesent[1],tobesent[2],"Engine 2",tobesent[3],tobesent[4],tobesent[5],tobesent[6],tobesent[7],np++,"\n");
+        		
+    for(counter = 0; counter < clients.length; counter++)
+    {
+    	clients[counter].sendUTF(JSON.stringify({time: (new Date()), data: setDataPack(tobesent)}));
+    }
+    
+	//console.log(JSON.stringify({time: (new Date()), data: tobesent}));
+	//console.log("X="+tobesent[12]+"\tY="+tobesent[13]+"\tGyro: "+tobesent[13]);
+	// console.log('PORCO DIO!!!!!!!!!!!!');
+    // console.log(JSON.stringify({time: (new Date()), val: data.toString()}));
+});
+
+// WebSocket server
+wsServer.on('request', function(request) 
+{
+    console.log((new Date()) + ' Connection from origin ' + request.origin + '.');
+    var connection = request.accept(null, request.origin);
+    var index = clients.push(connection) -1;
+    
+    //Invio al client la lista dei sensori appena si apre la connessione
+    connection.sendUTF(JSON.stringify(setSensorsList()));
+    
+    
+    /*This is the most important callback for us, we'll handle
+    all messages from users here.*/
+    connection.on('message', function(message) 
+    {
+        if (message.type === 'utf8') 
+        {
+            //Process WebSocket message
+			console.log(message.utf8Data);
+			if(Math.abs((new Date(message.utf8Data)).getTime()-(new Date()).getTime()) > 1000*15*60) 
+			{
+				child = exec('sudo date --set="' + message.utf8Data + '"', function(error, stdout, stderr) 
+				{
+					console.log('Date set to ' + stdout);
+				});
+			}
+        }
+    });
+
+    connection.on('close', function(connection) 
+    {
+        //Close user connection
+        console.log((new Date()) + " Peer "+ connection.remoteAddress + " disconnected.");
+		clients.splice(index, 1);
+    });
+});
+
+var static = require('node-static');
+
+//Create a node-static server instance to serve the './public' folder
+
+var file = new(static.Server)('./public', {cache: false});
+
+require('http').createServer(function (request, response) 
+{
+    request.addListener('end', function () 
+    {
+        // Serve files!
+
+        file.serve(request, response, function (err, result) 
+        {
+            if (err) 
+            { 
+            	//There was an error serving the file
+                console.error("Error serving " + request.url + " - " + err.message);
+
+                // Respond to the client
+                response.writeHead(404, 'Not found');
+                
+				response.end();
+            }
+        });
+    });
+}).listen(80);
+
+function setSensorsList()
+{
+	JSON_sensorsList = {};
+	
+	//Engine 1
+    JSON_sensorsList.P_Air = true;
+    JSON_sensorsList.Lambda = true;
+    JSON_sensorsList.Throttle_Ang = true;
+    JSON_sensorsList.P_Oil = true;
+    		
+    //Engine 2
+    JSON_sensorsList.P_Fuel = true;
+    JSON_sensorsList.T_H2O = true;
+    JSON_sensorsList.T_Oil = true;
+    JSON_sensorsList.T_Air = true;
+    		
+    //Front_Sens_1
+    JSON_sensorsList.Steer_Ang = true;
+    JSON_sensorsList.P_Brake_F = true;
+    JSON_sensorsList.P_Brake_R = true;
+    		
+    //Front_Wheels
+    JSON_sensorsList.Damper_FL = true;
+    JSON_sensorsList.Damper_FR = true;
+    		
+    //Rear_Sens_1
+    JSON_sensorsList.T_Exhaust = true;
+    		
+    //Rear_Wheels
+    JSON_sensorsList.Damper_RL = true;
+    JSON_sensorsList.Damper_RR = true;
+    		
+    //Lap_Time
+    JSON_sensorsList.Remote_ID = false;
+    JSON_sensorsList.Last_Remote_Time = false;
+    		
+    //Inertial_Sens_1
+    JSON_sensorsList.Acc_Y = true;
+    JSON_sensorsList.Acc_X = true;
+    JSON_sensorsList.Gyro = false;
+    JSON_sensorsList.Comp = false;
+    
+    //Vehicle_Position
+    JSON_sensorsList.Pos_X = false;
+    JSON_sensorsList.Pos_Y = false;
+    
+    //Clutch_Status
+    JSON_sensorsList.Clutch_Pos = true;
+    		
+    //Batt_Sens
+    JSON_sensorsList.I_Batt = true;
+    JSON_sensorsList.V_Batt = true;
+    JSON_sensorsList.T_Batt = true;
+    		
+    //Front_Left_Wheel_Temp
+    JSON_sensorsList.T_Wheel_IFL = false;
+    JSON_sensorsList.T_Wheel_CFL = false;
+    JSON_sensorsList.T_Wheel_EFL = false;
+    JSON_sensorsList.T_Brake_FL = false;
+    
+    //Front_Right_Wheel_Temp
+    JSON_sensorsList.T_Wheel_IFR = false;
+    JSON_sensorsList.T_Wheel_CFR = false;
+    JSON_sensorsList.T_Wheel_EFR = false;
+    JSON_sensorsList.T_Brake_FR = false;
+    		
+    //Rear_Left_Wheel_Temp
+    JSON_sensorsList.T_Wheel_IRL = false;
+    JSON_sensorsList.T_Wheel_CRL = false;
+    JSON_sensorsList.T_Wheel_ERL = false;
+    JSON_sensorsList.T_Brake_RL = false;
+    		
+    //Rear_Right_Wheel_Temp
+    JSON_sensorsList.T_Wheel_IRR = false;
+    JSON_sensorsList.T_Wheel_CRR = false;
+    JSON_sensorsList.T_Wheel_ERR = false;
+    JSON_sensorsList.T_Brake_RR = false;
+    
+    //Rotary_Switch
+    JSON_sensorsList.RPM = false;
+    JSON_sensorsList.Speed = false;
+    JSON_sensorsList.Map = false;
+    JSON_sensorsList.Gear = false;
+    JSON_sensorsList.TCS_Lev = false;
+    JSON_sensorsList.LCS = false;
+    JSON_sensorsList.TCS_Count = false;
+    JSON_sensorsList.Ign_Adv = false;
+    
+    return JSON_sensorsList;
+}
+
+function setDataPack(tobesent)
+{
+	JSON_dataPack = {};
+	
+	//Engine 1
+    JSON_dataPack.P_Air = tobesent[0];
+    JSON_dataPack.Lambda = tobesent[1];
+    JSON_dataPack.Throttle_Ang = tobesent[2];
+    JSON_dataPack.P_Oil = tobesent[3];
+    		
+    //Engine 2
+    JSON_dataPack.P_Fuel = tobesent[4];
+    JSON_dataPack.T_H2O = tobesent[5];
+    JSON_dataPack.T_Oil = tobesent[6];
+    JSON_dataPack.T_Air = tobesent[7];
+    		
+    //Front_Sens_1
+    JSON_dataPack.Steer_Ang = tobesent[8];
+    JSON_dataPack.P_Brake_F = tobesent[9];
+    JSON_dataPack.P_Brake_R = tobesent[10];
+    		
+    //Front_Wheels
+    JSON_dataPack.Damper_FL = tobesent[11];
+    JSON_dataPack.Damper_FR = tobesent[12];
+    		
+    //Rear_Sens_1
+    JSON_dataPack.T_Exhaust = tobesent[13];
+    		
+    //Rear_Wheels
+    JSON_dataPack.Damper_RL = tobesent[14];
+    JSON_dataPack.Damper_RR = tobesent[15];
+    		
+    //Lap_Time
+    JSON_dataPack.Remote_ID = tobesent[16];
+    JSON_dataPack.Last_Remote_Time = tobesent[17];
+    		
+    //Inertial_Sens_1
+    JSON_dataPack.Acc_Y = tobesent[18];
+    JSON_dataPack.Acc_X = tobesent[19];
+    JSON_dataPack.Gyro = tobesent[20];
+    JSON_dataPack.Comp = tobesent[21];
+    
+    //Vehicle_Position
+    JSON_dataPack.Pos_X = tobesent[22];
+    JSON_dataPack.Pos_Y = tobesent[23];
+    
+    //Clutch_Status
+    JSON_dataPack.Clutch_Pos = tobesent[24];
+    		
+    //Batt_Sens
+    JSON_dataPack.I_Batt = tobesent[25];
+    JSON_dataPack.V_Batt = tobesent[26];
+    JSON_dataPack.T_Batt = tobesent[27];
+    		
+    //Front_Left_Wheel_Temp
+    JSON_dataPack.T_Wheel_IFL = tobesent[28];
+    JSON_dataPack.T_Wheel_CFL = tobesent[29];
+    JSON_dataPack.T_Wheel_EFL = tobesent[30];
+    JSON_dataPack.T_Brake_FL = tobesent[31];
+    
+    //Front_Right_Wheel_Temp
+    JSON_dataPack.T_Wheel_IFR = tobesent[32];
+    JSON_dataPack.T_Wheel_CFR = tobesent[33];
+    JSON_dataPack.T_Wheel_EFR = tobesent[34];
+    JSON_dataPack.T_Brake_FR = tobesent[35];
+    		
+    //Rear_Left_Wheel_Temp
+    JSON_dataPack.T_Wheel_IRL = tobesent[36];
+    JSON_dataPack.T_Wheel_CRL = tobesent[37];
+    JSON_dataPack.T_Wheel_ERL = tobesent[38];
+    JSON_sensorsList.T_Brake_RL = tobesent[39];
+    		
+    //Rear_Right_Wheel_Temp
+    JSON_dataPack.T_Wheel_IRR = tobesent[40];
+    JSON_dataPack.T_Wheel_CRR = tobesent[41];
+    JSON_dataPack.T_Wheel_ERR = tobesent[42];
+    JSON_dataPack.T_Brake_RR = tobesent[43];
+    
+    //Rotary_Switch
+    JSON_dataPack.RPM = tobesent[44];
+    JSON_dataPack.Speed = tobesent[45];
+    JSON_dataPack.Map = tobesent[46];
+    JSON_dataPack.Gear = tobesent[47];
+    JSON_dataPack.TCS_Lev = tobesent[48];
+    JSON_dataPack.LCS = tobesent[49];
+    JSON_dataPack.TCS_Count = tobesent[50];
+    JSON_dataPack.Ign_Adv = tobesent[51];
+    
+    return JSON_dataPack;
+}
+
+function simulateDataPack()
+{
+	JSON_dataPack = {};
+	for(var counter = 0; counter < tobesent.length(); counter++) 
+	{
+		tobesent[counter] = Math.floor(Math.random()*255);
+	}
+	
+	//Engine 1
+    JSON_dataPack.P_Air = tobesent[1];
+    JSON_dataPack.Lambda = tobesent[2];
+    JSON_dataPack.Throttle_Ang = tobesent[3];
+    JSON_dataPack.P_Oil = tobesent[4];
+    		
+    //Engine 2
+    JSON_dataPack.P_Fuel = tobesent[5];
+    JSON_dataPack.T_H2O = tobesent[6];
+    JSON_dataPack.T_Oil = tobesent[7];
+    JSON_dataPack.T_Air = tobesent[8];
+    		
+    //Front_Sens_1
+    JSON_dataPack.Steer_Ang = tobesent[9];
+    JSON_dataPack.P_Brake_F = tobesent[10];
+    JSON_dataPack.P_Brake_R = tobesent[11];
+    		
+    //Front_Wheels
+    JSON_dataPack.Damper_FL = tobesent[12];
+    JSON_dataPack.Damper_FR = tobesent[13];
+    		
+    //Rear_Sens_1
+    JSON_dataPack.T_Exhaust = tobesent[14];
+    		
+    //Rear_Wheels
+    JSON_dataPack.Damper_RL = tobesent[15];
+    JSON_dataPack.Damper_RR = tobesent[16];
+    		
+    //Lap_Time
+    JSON_dataPack.Remote_ID = tobesent[17];
+    JSON_dataPack.Last_Remote_Time = tobesent[18];
+    		
+    //Inertial_Sens_1
+    JSON_dataPack.Acc_Y = tobesent[19];
+    JSON_dataPack.Acc_X = tobesent[20];
+    JSON_dataPack.Gyro = tobesent[21];
+    JSON_dataPack.Comp = tobesent[22];
+    
+    //Vehicle_Position
+    JSON_dataPack.Pos_X = tobesent[23];
+    JSON_dataPack.Pos_Y = tobesent[24];
+    
+    //Clutch_Status
+    JSON_dataPack.Clutch_Pos = tobesent[25];
+    		
+    //Batt_Sens
+    JSON_dataPack.I_Batt = tobesent[26];
+    JSON_dataPack.V_Batt = tobesent[27];
+    JSON_dataPack.T_Batt = tobesent[28];
+    		
+    //Front_Left_Wheel_Temp
+    JSON_dataPack.T_Wheel_IFL = tobesent[29];
+    JSON_dataPack.T_Wheel_CFL = tobesent[30];
+    JSON_dataPack.T_Wheel_EFL = tobesent[31];
+    JSON_dataPack.T_Brake_FL = tobesent[32];
+    
+    //Front_Right_Wheel_Temp
+    JSON_dataPack.T_Wheel_IFR = tobesent[33];
+    JSON_dataPack.T_Wheel_CFR = tobesent[34];
+    JSON_dataPack.T_Wheel_EFR = tobesent[35];
+    JSON_dataPack.T_Brake_FR = tobesent[36];
+    		
+    //Rear_Left_Wheel_Temp
+    JSON_dataPack.T_Wheel_IRL = tobesent[37];
+    JSON_dataPack.T_Wheel_CRL = tobesent[38];
+    JSON_dataPack.T_Wheel_ERL = tobesent[39];
+    JSON_sensorsList.T_Brake_RL = tobesent[40];
+    		
+    //Rear_Right_Wheel_Temp
+    JSON_dataPack.T_Wheel_IRR = tobesent[41];
+    JSON_dataPack.T_Wheel_CRR = tobesent[42];
+    JSON_dataPack.T_Wheel_ERR = tobesent[43];
+    JSON_dataPack.T_Brake_RR = tobesent[44];
+    
+    //Rotary_Switch
+    JSON_dataPack.RPM = tobesent[45];
+    JSON_dataPack.Speed = tobesent[46];
+    JSON_dataPack.Map = tobesent[47];
+    JSON_dataPack.Gear = tobesent[48];
+    JSON_dataPack.TCS_Lev = tobesent[49];
+    JSON_dataPack.LCS = tobesent[50];
+    JSON_dataPack.TCS_Count = tobesent[51];
+    JSON_dataPack.Ign_Adv = tobesent[52];
+}

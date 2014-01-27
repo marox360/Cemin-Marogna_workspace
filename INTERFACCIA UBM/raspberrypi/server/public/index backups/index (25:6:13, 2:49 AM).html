@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<meta charset="utf-8">
+        <title>UniBO MotorSport - Telemetry System</title>
+		<link rel="shortcut icon" href="./images/favicon-logo.ico"/>
+    </head>
+    <body>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    
+    <div id="leftbar">
+			<div id="side1" class="flip">
+				<div id="giri">
+				</div>
+				<div id="accContainer">
+					<div id="accelerometro">
+					</div>
+				</div>
+				<div id="giroscopio">
+				</div>
+				<div id="E85Lev" style="width:200px; height:150px;">
+				</div>
+				<br><br>
+				<center><button id="BS1" style="width:100%; margin-left: 0; position:absolute; bottom:10px; left:0px;">Car Control Panel</button></center>
+			</div>
+			<div id="side2" class = "flip">
+				<ul id="menu">
+					<li>
+						<a href="#" id="Mappe">Maps</a>
+						<ul>
+							<li>
+								<a href="#" id="PowerDRY">Power DRY</a>
+							</li>
+							<li>
+								<a href="#" id="PowerWET">Power WET</a>
+							</li>
+							<li>
+								<a href="#" id="FuelEcoDRY">Fuel Eco DRY</a>
+							</li>
+							<li>
+								<a href="#" id="FuelEcoWET">Fuel Eco WET</a>
+							</li>
+							<li>
+								<a href="#" id="Acceleration">Acceleration</a>
+							</li>
+							<li>
+								<a href="#" id="SkidPad">Skid Pad</a>
+							</li>	
+						</ul>
+					</li>
+					<li>
+						<a href="#" id="TCS">TCS</a>
+						<ul>
+							<li>
+								<a href="#" id="TCSOFF">TCS OFF</a>
+							</li>
+							<li>
+								<a href="#" id="TCS1">TCS 1</a>
+							</li>
+							<li>
+								<a href="#" id="TCS2">TCS 2</a>
+							</li>
+							<li>
+								<a href="#" id="TCS3">TCS 3</a>
+							</li>
+							<li>
+								<a href="#" id="TCS4">TCS 4</a>
+							</li>
+							<li>
+								<a href="#" id="TCS5">TCS 5</a>
+							</li>
+						</ul>
+					</li>
+					<li>
+						<a href="#" id="LCS">LCS</a>
+						<ul>
+							<li>
+								<a href="#" id="LCSOFF">LCS OFF</a>
+							</li>
+							<li>
+								<a href="#" id="LCS1">LCS 1</a>
+							</li>
+							<li>
+								<a href="#" id="LCS2">LCS 2</a>
+							</li>
+							<li>
+								<a href="#" id="LCS3">LCS 3</a>
+							</li>
+							<li>
+								<a href="#" id="LCS4">LCS 4</a>
+							</li>
+							<li>
+								<a href="#" id="LCS5">LCS 5</a>
+							</li>
+						</ul>
+					</li>
+					<li>
+						<a href="#" id="BrakeLight">Brake Light<br>Easter Eggs</a>
+						<ul>
+							<li>
+								<a href="#" id="BSOFF">¡BULLSHIT OFF!</a>
+							</li>
+							<li>
+								<a href="#" id="Matrix">Matrix</a>
+							</li>
+							<li>
+								<a href="#" id="Tilt">Tilt</a>
+							</li>
+							<li>
+								<a href="#" id="Snake">Snake</a>
+							</li>
+							<li>
+								<a href="#" id="Pong">Pong</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				
+				<br><br>	
+				<center><button id="BS2" style="width:100%; margin-left: 0; position:absolute; bottom:10px; left:0px;">Stats Graphs Panel</button></center>
+			</div>
+		</div>
+		
+		<div id="rightbar">
+		</div>
+		
+		<div id="header">
+			<div style="float: left;">
+				<table>
+				<tr>
+					<td><span>Thr</span></td>
+					<td><meter min="0" max="100" class="barre1" id="pThrottle_Ang" value="50"></meter></td>
+					<td><span id="vThrottle_Ang"></span>%</td>
+				</tr>
+				<tr>
+					<td><span>P Brake F</span></td>
+					<td><meter min="0" max="100" class="barre1" id="pP_Brake_F" value="50"></meter></td>
+					<td><span id="vP_Brake_F"></span>%</td>
+				</tr>
+				<tr>
+					<td><span>P Brake R</span></td>
+					<td><meter min="0" max="100" class="barre1" id="P_Brake_R" value="50"></meter></td>
+					<td><span id="vP_Brake_R"></span>%</td>
+				</tr>
+				<tr>
+					<td>Brake Bal</td>
+					<td><meter min="0" max="100" class="barre1" id="pRipart" value="50"></meter></td>
+					<td><span id="vRipart"></span>%</td>
+				</tr>
+				<tr>
+					<td>Clutch Pos</td>
+					<td><meter min="0" max="100" class="barre1" id="pClutch_Pos" value="50"></meter></td>
+					<td><span id="vClutch_Pos"></span>%</td>
+				</tr>
+				</table>
+			</div>
+			<div style="float: right; width: 50px; height:50px;">
+				<center><img  id="compass" src="./images/compass.png" style="width:50px; height:50px; margin-top:30px; margin-left:50px;"/></center>
+			</div>
+			<div  style="float: right; width: 75px;">
+					<canvas id="display" width="70" height="90" >
+					</canvas>
+					km/h <span id="Speed"></span>
+			</div>
+			<div style="float: right;">
+				<table style="margin-left: 30px;">
+					<tr>
+						<td>Map</td><td><span id="Map"></span></td>
+					</tr>
+					<tr>
+						<td>TCS Level</td><td><span id="TCS_Lev"></span></td>
+					</tr>
+					<tr>
+						<td>LCS</td><td><span id="rot3"></span></td>
+					</tr>
+					<tr>
+						<td>TCS count</td><td><span id="TCS_Count"></span></td>
+					</tr>
+					<tr>
+						<td>&Delta; Ant</td><td><span id="Ign_Adv"></span></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		
+		<div id="grafici">
+		</div>
+		
+		<!--CARICAMENTO LIBRERIE-->
+        <script src="./js/jquery.js"></script>
+		<script src="./js/jquery.flot.js"></script>
+		<script type="text/javascript" src="./speedometer/digitaldisplay.js"></script>
+        <script type="text/javascript" src="/speedometer/speedometer.js"></script>
+        <script type="text/javascript" src="./speedometer/themes/default.js"></script>
+		<script type="text/javascript" src="/speedometer/xcanvas.js"></script>
+        <script type="text/javascript" src="/speedometer/tbe.js"></script>
+		<script type="text/javascript" src="./segment/segment-display.js"></script>
+		<script src="./js/jqueryui.min.js"></script>
+		<script language="javascript" type="text/javascript" src="./js/jquery.flot.navigate.js"></script>
+		<script type="text/javascript" src="./js/jquery.fullscreen-min.js"></script>
+		<script type="text/javascript" src="./js/md5-min.js"></script>
+		<script type="text/javascript" src="./js/jquery.pnotify.min.js"></script>
+		<script type="text/javascript" src="./js/justgage.1.0.1.min.js"></script>
+		<script type="text/javascript" src="./js/raphael.2.1.0.min.js"></script>
+		<script type="text/javascript" src="./js/jQueryRotateCompressed.2.2.js"></script>
+				
+        <script>
+        //--> Da mettere in un file .js una volta finito!!! <--    	
+    	
+		var data = [];
+		var all_data = [];
+		var t = 0;
+		var minArr = [];
+		var maxArr = [];
+		
+		var grafici = [];
+		var hidden = [];
+		var paused = [];
+		var giri;
+		var accelGraph;
+		var accelData = [];
+		var giroscopio;
+		var livelloE85;
+		var alertSound;
+		var visibili = [];
+		var attivi = [];
+		var listaBooleanSensori = []; //contiene i sensori con scritto true o false
+		var menuAttivo = null;
+		var json;
+		var primo_messaggio = true;
+		var nomi_sensori; //array contentene i nomi di tutti i sensori
+		var ordineGraf; //array che contiene i nomi dei grafici ordinati..
+		var pswMD5 = "33c9bbabfa3691087d7f8a4b540b22f0";
+		var burned_E85 = 0;
+		var compActDegs = 0;
+		
+		var display = new SegmentDisplay("display");
+	  	display.pattern         = "#";
+	  	display.displayAngle    = 6;
+	  	display.digitHeight     = 20;
+	  	display.digitWidth      = 11.5;
+	  	display.digitDistance   = 2.5;
+	  	display.segmentWidth    = 2;
+	  	display.segmentDistance = 0.3;
+	  	display.segmentCount    = 7;
+	  	display.cornerType      = 3;
+	  	display.colorOn         = "#d3031b";
+	  	display.colorOff        = "lightgray";
+	  	display.draw();
+	  	
+	  		  	
+	  	//EHM A COSA MI SERVE E COME LA USO? VEDI IN FONDO...
+	  	var sensor = null;
+	  	
+	  	function notifyMap(voceMenu)
+	  	{
+	  		$.pnotify(
+			{
+    			title: '&#10003 PREGIO™! - Comand Sent!',
+    			text: 'MAP "' + voceMenu + '" - SETTED',
+    			type: 'success'
+			});
+	  	}
+	  	function notifyTCS(voceMenu)
+	  	{
+	  		voceMenu = voceMenu.replace("TCS ","");
+	  		$.pnotify(
+			{
+    			title: '&#10003 PREGIO™! - Comand Sent!',
+    			text: 'TCS - SETTED to LV. "' + voceMenu + '"',
+    			type: 'success'
+			});
+	  	}
+	  	function notifyLCS(voceMenu)
+	  	{
+	  		voceMenu = voceMenu.replace("LCS ","");
+	  		$.pnotify(
+			{
+    			title: '&#10003 PREGIO™! - Comand Sent!',
+    			text: 'LCS - SETTED to LV. "' + voceMenu + '"',
+    			type: 'success'
+			});
+	  	}
+	  	function notifyBS(voceMenu)
+	  	{
+	  		$.pnotify(
+			{
+    			title: '&#10003 PREGIO™! - Watch dez sh*t, nigga!!!',
+    			text: 'BRAKELIGHT displays now "' + voceMenu + '"',
+    			type: 'success'
+			});
+	  	}
+	  	
+	  	
+	  	function visualizza()
+		{
+			var h, pos;
+
+			for(h = 0; h < nomi_sensori.length; h++)
+			{
+				if (listaBooleanSensori[nomi_sensori[h]] == true)
+				{
+					if (attivi.indexOf(nomi_sensori[h]) != -1) 
+					{
+						document.getElementById('play' + nomi_sensori[h])
+						document.getElementById('play' + nomi_sensori[h]).src='./images/pause_butt.png';
+					}
+					else 
+					{
+						document.getElementById('play' + nomi_sensori[h]).src='./images/play_butt.png';
+					}
+				
+					if (visibili.indexOf(nomi_sensori[h]) != -1) 
+					{
+						document.getElementById('sens' + nomi_sensori[h]).style.color="lightgreen";
+						$(nomi_sensori[h]).show('fast');
+						$("#container" + nomi_sensori[h]).show('fast');
+					}
+					else 
+					{
+						document.getElementById('sens' + nomi_sensori[h]).style.color="darkgray";
+						$(nomi_sensori[h]).hide('fast');
+						$("#container" + nomi_sensori[h]).hide('fast');
+					}
+				}			
+			}
+			//SALVO L'ATTUALE ORDINE DEI GRAFICI NEL LOCAL STORAGE, se lo supporto
+			if(typeof(Storage) !== "undefined") 
+			{
+				localStorage.setItem('attivi', JSON.stringify(attivi));
+				localStorage.setItem('visibili', JSON.stringify(visibili));
+				//localStorage.setItem('listaBooleanSensori', JSON.stringify(listaBooleanSensori)); serve?
+				localStorage.setItem('ordineGraf', JSON.stringify(ordineGraf));
+			}
+		}
+	
+		document.getElementById('BS1').addEventListener( 'click', function(event) 
+		{
+			var pswSent = hex_md5(prompt("PASSWORD REQUIRED"));
+			if(pswSent == pswMD5)
+			{
+				document.getElementById('side2').className = 'flip flip-side1';
+				document.getElementById('side1').className = 'flip flip-side2';
+			}
+			else
+			{
+				alert("WRONG PASSWORD - ACCESS DENIED!");
+			}
+		}, false);
+		
+		document.getElementById('BS2').addEventListener( 'click', function(event) 
+		{
+			document.getElementById('side2').className = 'flip';
+			document.getElementById('side1').className = 'flip';
+		}, false);
+		
+		//DA MODIFICARE
+		$(document).ready(function() 
+		{  
+			$(document).fullScreen(true);
+			$("#myVideo").fullScreen(true);
+			
+			$('#fanScroll').change(function() 
+			{
+			    $('#fanScrollVal').text($(this).val());
+			});
+			
+			$("#fanControl").hide();
+			$.pnotify.defaults.delay = 1500;
+			
+			//INVIO COMANDI ALLA MACCHINA
+		   var comando = {id : 0, dlc: 0, data: [0,0,0,0,0,0,0,0]};
+           $('#menu a').click(function()
+		   {
+				var voceMenu = $(this).html();
+				
+				switch(voceMenu)
+				{
+				//MAPPE
+					case "Power DRY":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 1;
+						for (var i = 1; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+				
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyMap(voceMenu);
+					break;
+					
+					case "Power WET":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 2;
+						for (var i = 1; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyMap(voceMenu);
+					break;
+					
+					case "Fuel Eco DRY":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 4;
+						for (var i = 1; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyMap(voceMenu);
+					break;
+					
+					case "Fuel Eco WET":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 8;
+						for (var i = 1; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyMap(voceMenu);
+					break;
+					
+					case "Acceleration":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 16;
+						for (var i = 1; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyMap(voceMenu);
+					break;
+					
+					case "Skid Pad":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 32;
+						for (var i = 1; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyMap(voceMenu);
+					break;
+					
+				//TCS
+					case "TCS OFF":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 0;
+						comando.data[1] = 1;
+						for (var i = 2; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+				
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyTCS(voceMenu);
+					break;
+					
+					case "TCS 1":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 0;
+						comando.data[1] = 2;
+						for (var i = 2; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyTCS(voceMenu);
+					break;
+					
+					case "TCS 2":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 0;
+						comando.data[1] = 4;
+						for (var i = 2; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyTCS(voceMenu);
+					break;
+					
+					case "TCS 3":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 0;
+						comando.data[1] = 8;
+						for (var i = 2; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyTCS(voceMenu);
+					break;
+					
+					case "TCS 4":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 0;
+						comando.data[1] = 16;
+						for (var i = 2; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyTCS(voceMenu);
+					break;
+					
+					case "TCS 5":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 0;
+						comando.data[1] = 32;
+						for (var i = 2; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyTCS(voceMenu);
+					break;
+					
+				//LCS
+					case "LCS OFF":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 0;
+						comando.data[1] = 0;
+						comando.data[2] = 1;
+						for (var i = 3; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+				
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyLCS(voceMenu);
+					break;
+					
+					case "LCS 1":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 0;
+						comando.data[1] = 0;
+						comando.data[2] = 2;
+						for (var i = 3; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyLCS(voceMenu);
+					break;
+					
+					case "LCS 2":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 0;
+						comando.data[1] = 0;
+						comando.data[2] = 4;
+						for (var i = 3; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyLCS(voceMenu);
+					break;
+					
+					case "LCS 3":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 0;
+						comando.data[1] = 0;
+						comando.data[2] = 8;
+						for (var i = 3; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyLCS(voceMenu);
+					break;
+					
+					case "LCS 4":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 0;
+						comando.data[1] = 0;
+						comando.data[2] = 16;
+						for (var i = 3; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyLCS(voceMenu);
+					break;
+					
+					case "LCS 5":
+						comando.id = 64;
+						comando.dlc = 3;
+						comando.data[0] = 0;
+						comando.data[1] = 0;
+						comando.data[2] = 32;
+						for (var i = 3; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyLCS(voceMenu);
+					break;
+					
+				//EASTER EGGS MAROGNATI
+					case "¡BULLSHIT OFF!":
+						comando.id = 252;
+						comando.dlc = 8;
+						comando.data[0] = 0;
+						for (var i = 1; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						$.pnotify(
+						{
+    						title: '☹ SO SAD!',
+    						text: 'NO more BULLSHITS, now...',
+    						type: 'success'
+						});
+					break;
+					
+					case "Matrix":
+						comando.id = 252;
+						comando.dlc = 8;
+						comando.data[0] = 1;
+						for (var i = 1; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyBS(voceMenu);
+					break;
+					
+					case "Tilt":
+						comando.id = 252;
+						comando.dlc = 8;
+						comando.data[0] = 2;
+						for (var i = 1; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyBS(voceMenu);
+					break;
+					
+					case "Snake":
+						comando.id = 252;
+						comando.dlc = 8;
+						comando.data[0] = 3;
+						for (var i = 1; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyBS(voceMenu);
+					break;
+					
+					case "Pong":
+						comando.id = 252;
+						comando.dlc = 8;
+						comando.data[0] = 4;
+						for (var i = 1; i < 8; i++)
+						{
+							comando.data[i] = 0;
+						}
+						
+						connection.send(String.fromCharCode(comando.id, comando.dlc, comando.data[0], comando.data[1], comando.data[2], comando.data[3], comando.data[4], comando.data[5], comando.data[6], comando.data[7]));
+						notifyBS(voceMenu);
+					break;
+				}
+		   });
+			
+			var aopt = 
+			{
+				xaxis: 
+				{
+					min: -2,
+					max:  2
+				},
+				yaxis: 
+				{
+					min: -2,
+					max:  2
+				},
+				series: 
+				{
+					points: 
+					{
+			      		radius: 5,
+						show: true,
+						fill: true 
+			    	},
+					shadowSize: 0,
+				},
+				colors: ['#fff'],
+				grid: 
+				{
+					borderColor: '#fff',
+					color: "#fff", 
+					backgroundColor: '#0c2c7f' 
+				}			
+			};
+			
+			accelData.push([0,0]);
+			accelGraph = $.plot($("#accelerometro"), [accelData], aopt);
+			
+			window.WebSocket = window.WebSocket || window.MozWebSocket;
+
+		    var connection = new WebSocket('ws://'+window.location.hostname+':1337');
+
+		    connection.onopen = function () 
+			{
+		        // connection is opened and ready to use
+		        primo_messaggio = true;
+				connection.send((new Date()));
+		    };
+
+		    connection.onerror = function (error) 
+			{
+		        // an error occurred when sending/receiving data
+		    };
+			
+			var first = true;
+			var plot;
+			
+			function log2(x)
+			{
+		  		var ans = 0 ;
+		  		while( x >>= 1 ) ans++;
+		  		return ans ;
+			}
+			
+		    connection.onmessage = function (message) 
+			{
+		       	json = JSON.parse(message.data);
+		     	
+		     	//correggere da qua in giù... qualcosa non va!
+				$(function () 
+				{
+					var i;
+					if (primo_messaggio)
+					{	
+						primo_messaggio = false;
+						
+						nomi_sensori = Object.keys(json);
+						
+						for (i=0; i < nomi_sensori.length; i++)
+						{
+							if (json[nomi_sensori[i]] == true) 
+							{
+							//AGGIUNGI IL GRAFICO i DI NOME json[i]
+							$("#grafici").append("<div id=\"container" + nomi_sensori[i] + "\"><div class=\"container\" id=\"cont" + nomi_sensori[i] + "\"><table><tr><td id=\"name" + nomi_sensori[i] + "\">" + nomi_sensori[i] + "</td><td>min</td><td>max</td></tr><tr><td id=\"value" + nomi_sensori[i] + "\"></td><td id=\"min" + nomi_sensori[i] + "\"></td><td id=\"max" + nomi_sensori[i] +"\"></td></tr></table></div><div id=" + nomi_sensori[i] + " class=\"graph\"></div></div>");
+							
+							//AGGIUNGI NELLA RIGHTBAR IL PULSANTE i DI NOME json[i]
+							$("#rightbar").append("<div class=\"spie\" id=\"spia" + nomi_sensori[i] + "\"><img class=\"led\" src=\"./images/led_off.png\" id=\"led" + nomi_sensori[i] + "\"/> <span class=\"sensore\" id=\"sens" + nomi_sensori[i] + "\">" + nomi_sensori[i] + "</span> <img id=\"play" + nomi_sensori[i] + "\" class=\"playpause\" src=\"./images/play_butt.png\" /><div class=\"alarm\" id=\"alarm" + nomi_sensori[i] + "\">Min: <input type=\"text\" id=\"alMin" + nomi_sensori[i] + "\" /><input type=\"checkbox\" id=\"alMinEn" + nomi_sensori[i] + "\" /><br />Max: <input type=\"text\" id=\"alMax" + nomi_sensori[i] + "\" /><input type=\"checkbox\" id=\"alMaxEn" + nomi_sensori[i] + "\" /></div></div>");
+							data[i] = [];
+							all_data[i] = [];
+							
+							minArr[i] = null;
+							maxArr[i] = null;
+							}
+						}
+						
+						if (typeof(Storage) !== "undefined") 
+						{
+							if (localStorage.getItem('listaBooleanSensori') != null && JSON.stringify(json) == localStorage.getItem('listaBooleanSensori'))
+							{
+								
+									if(localStorage.getItem('visibili') != null && localStorage.getItem('attivi') != null && localStorage.getItem('ordineGraf') != null)
+  									{
+  										visibili = JSON.parse(localStorage.getItem('visibili'));
+  										attivi = JSON.parse(localStorage.getItem('attivi'));
+  										listaBooleanSensori = JSON.parse(localStorage.getItem('listaBooleanSensori'));
+  										ordineGraf = JSON.parse(localStorage.getItem('ordineGraf'));
+  									}
+  									else
+  									{
+  										visibili = [nomi_sensori[0],nomi_sensori[1],nomi_sensori[2],nomi_sensori[3]];
+  										attivi = [nomi_sensori[0],nomi_sensori[1],nomi_sensori[2],jnomi_sensori[3]];
+  										
+  										listaBooleanSensori = json;
+  										ordineGraf = nomi_sensori;
+  									}	
+							}
+							else
+							{
+								//se supporta il localStorage ci salviamo la listaBooleanSensori
+								visibili = [nomi_sensori[0],nomi_sensori[1],nomi_sensori[2],nomi_sensori[3]];	
+  								attivi = [nomi_sensori[0],nomi_sensori[1],nomi_sensori[2],nomi_sensori[3]];
+  										
+  								listaBooleanSensori = json;
+  								ordineGraf = nomi_sensori;
+								
+								localStorage.setItem('listaBooleanSensori', JSON.stringify(json));
+								localStorage.setItem('attivi', JSON.stringify(attivi));
+								localStorage.setItem('visibili', JSON.stringify(visibili));
+								localStorage.setItem('ordineGraf', JSON.stringify(ordineGraf));
+							}
+						}
+						else
+						{
+							visibili = [nomi_sensori[0],nomi_sensori[1],nomi_sensori[2],nomi_sensori[3]];		
+  							attivi = [nomi_sensori[0],nomi_sensori[1],nomi_sensori[2],nomi_sensori[3]];
+  										
+  							listaBooleanSensori = json;
+  							ordineGraf = nomi_sensori;
+						}	
+						
+						$(".alarm").hide();
+						
+						//ORDINAMENTO GRAFICI	
+						var counter;
+ 						 $('#container' + ordineGraf[0]).prependTo('#grafici');
+ 						 $('#spia' + ordineGraf[0]).prependTo('#rightbar');
+ 						 for(counter = 1; counter<ordineGraf.length; counter++)
+ 						 {
+ 						 	$('#container' + ordineGraf[counter]).insertAfter('#container' + ordineGraf[counter-1]);
+ 						 	$('#spia' + ordineGraf[counter]).insertAfter('#spia' + ordineGraf[counter-1]);
+ 						 }	
+ 						 
+ 						 giri = new Speedometer ('giri', {theme: 'default', display: false, glossy: true, min: 0, max: 15, thresPivot: 14.25, threshold:3.5});
+           				 giri.draw ();
+						 giroscopio = new Speedometer ('giroscopio', {theme: 'giroscopio', display: false, glossy: true, min: -150, max: 150, thresPivot: 0, threshold:300});
+						 giroscopio.draw();
+						 livello_E85 = new JustGage(
+	  					 {
+     					   id: "E85Lev", 
+     					   titleFontColor : "white",
+     					   labelFontColor : "white",
+     					   value: 40,
+     					   min: 0,
+       					   max: 80,
+       					   title: "E85 Fuel Tank",
+       					   label: "burned dLs"
+       					 });
+						 visualizza();
+						 
+						 
+						//cambiamo solo ordineGraf o anche nomi_sensori e listaBooleanSensori????
+						//ABILITO ORDINAMENTO DRAG&DROP DEI GRAFICI
+						$('#rightbar').sortable
+						({
+							stop: function(event, ui)
+							{
+								var grafPos;
+								grafPos = $(this).sortable('toArray');
+								var indiceArrivo;
+								indiceArrivo = grafPos.indexOf(ui.item[0].id);
+								var indicePartenza;
+								indicePartenza = ui.item[0].id.replace('spia','');
+								
+								
+								//bisogna testare se li stampa giusti
+								//console.log("Indice d'arrivo: " + indiceArrivo + ", indice di parenza: " + indicePartenza);
+								
+								if(indiceArrivo > ordineGraf.indexOf(indicePartenza))
+								{
+									for(counter = ordineGraf.indexOf(indicePartenza); counter < indiceArrivo; counter++)
+									{
+										ordineGraf[counter] = ordineGraf[counter+1];
+									}
+								}
+								else
+								{
+									for(counter = ordineGraf.indexOf(indicePartenza); counter > indiceArrivo; counter--)
+									{
+										ordineGraf[counter] = ordineGraf[counter-1];
+									}
+								}
+								
+								ordineGraf[indiceArrivo] = indicePartenza;
+								//listaBooleanSensori[ordineGraf[indiceArrivo]] = ui.item[0].id;
+
+								if(indiceArrivo != -1)
+								{
+									if(indiceArrivo == 0)
+									{
+										$('#' + ui.item[0].id.replace('spia','container')).prependTo('#grafici');
+									}
+									else
+									{
+										$('#' + ui.item[0].id.replace('spia','container')).insertAfter('#'+ grafPos[indiceArrivo-1].replace('spia', 'container'));
+									}
+									visualizza();
+								}
+							}
+						});
+						
+						$('#rightbar').disableSelection();
+						
+						$('.playpause').click(function()
+						{
+							var n;
+							n = this.id.replace("play","");
+							var ind;
+							ind = attivi.indexOf(n) ;
+							document.getElementById('led' + n).src='./images/led_off.png';
+							
+							if (ind != -1)
+							{
+								attivi.splice(ind,1);
+								var opt=
+								{
+									xaxis:
+									{
+										mode: "time",
+										min: all_data[nomi_sensori.indexOf(n)][all_data[nomi_sensori.indexOf(n)].length-1][0]-10000
+									},
+	        						zoom: 
+									{
+    		        					interactive: true
+        							},
+        							pan: 
+									{
+            							interactive: true
+        							},
+									series: 
+									{ 
+										shadowSize: 0 
+									},
+									colors: ['red'],
+								};
+								//grafici[ind]?? array degli oggetti grafico!
+								grafici[ind] = $.plot(document.getElementById(n), [all_data[nomi_sensori.indexOf(n)]], opt);
+							}
+							else
+							{
+								if (attivi.length == 4)
+								{
+									attivi.splice(0,1);
+								}
+								attivi.push(n);
+					
+								var ind2 = visibili.indexOf(n);
+								
+								if (ind2 == -1)
+								{
+									if (visibili.length == 4)
+									{
+										visibili.splice(0, 1);
+									}
+									visibili.push(n);
+								}
+							}
+							visualizza();
+						});
+			
+						$('.sensore').click(function()
+						{
+							var n = this.id.replace("sens", "");
+							var ind = visibili.indexOf(n) ;
+							if (ind != -1)
+							{
+								visibili.splice(ind, 1);
+								var ind2 = attivi.indexOf(n) ;
+								if (ind2 != -1)
+								{
+									attivi.splice(ind2, 1);
+								}
+							}
+							else
+							{
+								if (visibili.length == 4)
+								{
+									visibili.splice(0, 1);
+									attivi.splice(0, 1);
+								}
+							visibili.push(n);
+							}
+							visualizza();
+						});
+		
+						$('.led').click(function()
+						{
+							var n = this.id.replace("led", "");
+							$("#alarm" + n).toggle('fast');
+						});
+					}
+					else 
+					{
+						//caso: ci arrivano i dati.. funziona??
+					
+					//ARRIVATO IL PACCHETTO JSON: CREO I GRAFICI PER I SENSORI
+					//console.log("Ci arrivano i dati!");
+					
+					var ripart;
+					giri.update(json.data.RPM);
+					giroscopio.update(json.data.Gyro);
+					burned_E85 += json.data.Fuel_Tank_Lev;
+					//DI PROVA
+					livello_E85.refresh(10);
+					//livello_E85.refresh(burned_E85);
+					
+					$('#compass').rotate(json.data.Comp - compActDegs);
+					compActDegs = json.data.Comp;
+					
+					//piccolo test se troviamo i valori.. che dovrebbe essere giusto se non ricordo male
+					document.getElementById('pThrottle_Ang').value = json.data.Throttle_Ang;
+					document.getElementById('pP_Brake_F').value = json.data.P_Brake_F;
+					document.getElementById('P_Brake_R').value = json.data.P_Brake_R;
+					
+					ripart = 200*json.data.P_Brake_F/(2*json.data.P_Brake_F+(json.data.P_Brake_R).toFixed(1));
+					try 
+					{
+						document.getElementById('pRipart').value = parseFloat(ripart);
+						document.getElementById('vRipart').innerHTML = parseFloat(ripart).toFixed(1);
+					}
+					catch(err)
+					{
+						document.getElementById('pRipart').value = 0;
+						document.getElementById('vRipart').innerHTML = parseFloat(0.0).toFixed(1);
+					}
+					
+					document.getElementById('pClutch_Pos').value= json.data.Clutch_Pos;
+															
+					document.getElementById('vThrottle_Ang').innerHTML= parseFloat(json.data.Throttle_Ang).toFixed(1);
+					document.getElementById('vP_Brake_F').innerHTML= parseFloat(json.data.P_Brake_F).toFixed(1);
+					document.getElementById('vP_Brake_R').innerHTML= parseFloat(json.data.P_Brake_R).toFixed(1);
+					
+					display.setValue(json.data.Gear);
+					
+					if(parseInt(json.data.Map)<=64 && parseInt(json.data.Map)>0)
+						document.getElementById('Map').innerHTML=mappe[log2(parseInt(json.data.Map))];
+					if(parseInt(json.data.TCS_Lev)<=64 && parseInt(json.data.TCS_Lev)>0)
+						document.getElementById('TCS_Lev').innerHTML=livtrac[log2(parseInt(json.data.TCS_Lev))];
+					if(parseInt(json.data.LCS)<=64 && parseInt(json.data.LCS)>0)
+						document.getElementById('rot3').innerHTML=rotary3[log2(parseInt(json.data.LCS))];
+								
+					document.getElementById('TCS_Count').innerHTML=json.data.TCS_Count;
+					document.getElementById('Ign_Adv').innerHTML=json.data.Ign_Adv;
+					
+					document.getElementById('Speed').innerHTML=json.data.Speed;
+					accelData.pop();
+					accelData.push([json.data.Acc_X,json.data.Acc_Y]);
+					accelGraph.setData([accelData]);
+					accelGraph.draw();
+
+					//FARE PER NOME?
+					//da qua in giù è da correggere
+					var l;
+					for (l = 0; l < nomi_sensori.length; l++) 
+					{
+						if (listaBooleanSensori[nomi_sensori[l]])
+						{
+							if (visibili.indexOf(nomi_sensori[l]) != -1) 
+							{
+								//funziona questa push? bisogna stamparsi all_data e data!
+								//console.log("valore " + l + " : " + json.data[nomi_sensori[l]]);
+								all_data[l].push([(new Date(json.time)).getTime(), json.data[nomi_sensori[l]]]);
+								data[l].push([(new Date(json.time)).getTime(), json.data[nomi_sensori[l]]]);
+								//console.log("all_data di " + l + " : " + all_data[l] + ", data: " + data[l]);
+							
+								if (data[l].length > 110)
+								{
+									data[l].shift();
+								}
+								if (all_data[l].length > 300)
+								{
+									all_data[l].shift();
+								}
+								var opt=
+								{
+									xaxis: 
+									{ 
+										mode: "time",
+										min: (new Date(json.time)).getTime()-10000 
+									},
+	        						zoom: 
+									{
+            							interactive: false
+        							},
+        							pan: 
+									{
+            							interactive: false
+        							},
+									series: 
+									{ 
+										shadowSize: 0 
+									},
+									colors: ['red'],
+								};
+								
+								
+								if(visibili.indexOf(nomi_sensori[l]) != -1 && attivi.indexOf(nomi_sensori[l]) != -1)
+								{
+									//console.log("log: " + nomi_sensori.length);
+									//grafici[l] = $.plot($(nomi_sensori[l]), [data[l]], opt);
+									grafici[l] = $.plot(document.getElementById(nomi_sensori[l]), [data[l]], opt);
+								}
+							
+								//questo era sbagliato prima!
+								$("#value" + nomi_sensori[l]).html(json.data[nomi_sensori[l]]);
+								
+								if(minArr[l] == null || json.data[nomi_sensori[l]] < minArr[l])
+								{
+									minArr[l] = json.data[nomi_sensori[l]];
+									$("#min" + nomi_sensori[l]).html(minArr[l]);
+									//console.log($("#min" + nomi_sensori[l]).html());
+								}
+								if(maxArr[l] == null || json.data[nomi_sensori[l]] > maxArr[l])
+								{ 
+									maxArr[l] = json.data[nomi_sensori[l]];
+									$("#max"+ nomi_sensori[l]).html(maxArr[l]);
+									//console.log($("#max" + nomi_sensori[l]).html());
+								}					
+							}
+							//console.log(document.getElementById('alMax' + nomi_sensori[l]));
+							//console.log(document.getElementById('alMax' + nomi_sensori[l]).value);
+							//console.log(nomi_sensori[l]);
+							//if (listaBooleanSensori[nomi_sensori[l]] == true)
+							//{ // questo che controllo è? è uguale a quello sopra!
+							//console.log(nomi_sensori[l]);
+								if((json.data[nomi_sensori[l]] >= parseFloat(document.getElementById('alMax' + nomi_sensori[l]).value) && document.getElementById('alMaxEn' + nomi_sensori[l]).checked) 
+									|| (json.data[nomi_sensori[l]] <= parseFloat(document.getElementById('alMin' + nomi_sensori[l]).value) && document.getElementById('alMinEn' + nomi_sensori[l]).checked))
+								{
+									document.getElementById('led' + nomi_sensori[l]).src='./images/led_red.png';
+									//setTimeout(function()
+									//{
+										var ind;
+										ind = attivi.indexOf(nomi_sensori[l]);
+										if (ind != -1)
+										{
+											attivi.splice(ind,1);
+											grafici[ind].setData([all_data[ind]]);
+											grafici[ind].setupGrid();
+											grafici[ind].draw();
+											visualizza();
+										}	
+									//}, 1000);
+								}
+							//}
+						}//se il sensore è da plottare
+					}//for per ogni sensore
+				}//else (pacchetto con i dati)
+			});//function
+		}//on_message
+	});//document ready	
+	</script>
+	</body>
+</html>
